@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mandate Search System</title>
+<meta charset="UTF-8">
+<style>
+body{
+font-family:Arial;
+padding:40px;
+}
+input,button{
+padding:8px;
+margin:5px;
+}
+table{
+border-collapse:collapse;
+margin-top:20px;
+}
+td,th{
+border:1px solid black;
+padding:8px;
+}
+#suggestions{
+border:1px solid #ccc;
+width:260px;
+background:white;
+position:absolute;
+z-index:10;
+}
+.suggest-item{
+padding:6px;
+cursor:pointer;
+}
+.suggest-item:hover{
+background:#f0f0f0;
+}
+</style>
+</head>
+<body>
+
+<h2>Mandate Search System</h2>
+
+<input id="searchBox" onkeyup="suggest()" placeholder="Enter Account Number">
+<div id="suggestions"></div>
+<button onclick="search()">Search</button>
+
+<table id="result">
+<tr>
+<th>Account</th>
+<th>Name</th>
+<th>Category</th>
+<th>File</th>
+<th>Row</th>
+</tr>
+</table>
+
+<script>
+// Load CSV data
+let mandates=[];
+
+fetch("mandates.csv")
+.then(res=>res.text())
+.then(data=>{
+let rows=data.split("\n");
+rows.slice(1).forEach(r=>{
+let cols=r.split(",");
+mandates.push({
+account:cols[0],
+name:cols[1],
+category:cols[2],
+file:cols[3],
+row:cols[4]
+});
+});
+});
+
+// Search function
+function search(){
+let acc=document.getElementById("searchBox").value;
+let table=document.getElementById("result");
+table.innerHTML=`
+<tr>
+<th>Account</th>
+<th>Name</th>
+<th>Category</th>
+<th>File</th>
+<th>Row</th>
+</tr>`;
+mandates.forEach(m=>{
+if(m.account==acc){
+table.innerHTML+=`
+<tr>
+<td>${m.account}</td>
+<td>${m.name}</td>
+<td>${m.category}</td>
+<td>${m.file}</td>
+<td>${m.row}</td>
+</tr>
+`;
+}
+});
+}
+
+// Auto suggest
+function suggest(){
+let input=document.getElementById("searchBox").value;
+let box=document.getElementById("suggestions");
+box.innerHTML="";
+let count=0;
+mandates.forEach(m=>{
+if(count>=10) return;
+if(m.account.startsWith(input) && input!=""){
+let div=document.createElement("div");
+div.className="suggest-item";
+div.innerHTML=m.account+" - "+m.name;
+div.onclick=function(){
+document.getElementById("searchBox").value=m.account;
+box.innerHTML="";
+search();
+}
+box.appendChild(div);
+count++;
+}
+});
+}
+</script>
+
+</body>
+</html>
