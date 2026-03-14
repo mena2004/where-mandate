@@ -1,206 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Mandate Management System</title>
-
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-background:#0f172a;
-font-family:Segoe UI;
-color:#e2e8f0;
-}
-
-header{
-background:#020617;
-padding:20px;
-font-size:24px;
-font-weight:bold;
-letter-spacing:1px;
-}
-
-.container{
-padding:30px;
-max-width:1300px;
-margin:auto;
-}
-
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:10px;
-margin-bottom:25px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-}
-
-.stat{
-padding:15px;
-border-radius:8px;
-text-align:center;
-font-weight:bold;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0f172a;font-family:Segoe UI;color:#e2e8f0;}
+header{background:#020617;padding:20px;font-size:24px;font-weight:bold;letter-spacing:1px;}
+.container{padding:30px;max-width:1300px;margin:auto;}
+.card{background:#1e293b;padding:20px;border-radius:10px;margin-bottom:25px;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
+.stat{padding:15px;border-radius:8px;text-align:center;font-weight:bold;}
 .total{background:#3b82f6}
 .sav{background:#22c55e}
 .cur{background:#f59e0b}
 .fix{background:#a855f7}
-
-input,select{
-padding:10px;
-border-radius:6px;
-border:none;
-margin:6px;
-width:200px;
-}
-
-button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
+input,select{padding:10px;border-radius:6px;border:none;margin:6px;width:200px;}
+button{padding:10px 15px;border:none;border-radius:6px;cursor:pointer;}
 .add{background:#22c55e;color:white}
 .delete{background:#ef4444;color:white}
 .undo{background:#3b82f6;color:white}
-
-table{
-width:100%;
-margin-top:20px;
-border-collapse:collapse;
-}
-
-th{
-background:#020617;
-padding:12px;
-}
-
-td{
-padding:10px;
-border-bottom:1px solid #334155;
-}
-
-tr:hover{
-background:#334155;
-}
-
-#suggestions{
-position:absolute;
-background:#020617;
-border:1px solid #334155;
-width:250px;
-}
-
-.suggestion{
-padding:8px;
-cursor:pointer;
-}
-
-.suggestion:hover{
-background:#334155;
-}
-
-.history{
-height:160px;
-overflow:auto;
-font-size:13px;
-}
-
-.fileBar{
-margin:5px 0;
-}
-
-.progress{
-height:8px;
-background:#334155;
-border-radius:6px;
-overflow:hidden;
-}
-
-.progressFill{
-height:8px;
-background:#22c55e;
-}
-
+table{width:100%;margin-top:20px;border-collapse:collapse;}
+th{background:#020617;padding:12px;}
+td{padding:10px;border-bottom:1px solid #334155;}
+tr:hover{background:#334155;}
+#suggestions{position:absolute;background:#020617;border:1px solid #334155;width:250px;}
+.suggestion{padding:8px;cursor:pointer;}
+.suggestion:hover{background:#334155;}
+.history{height:160px;overflow:auto;font-size:13px;}
+.fileBar{margin:5px 0;}
+.progress{height:8px;background:#334155;border-radius:6px;overflow:hidden;}
+.progressFill{height:8px;background:#22c55e;}
 </style>
-
 </head>
-
-
 <body>
-
-<header>
-Mandate Management System
-</header>
-
+<header>Mandate Management System</header>
 <div class="container">
 
+<!-- Stats -->
 <div class="card">
-
 <div class="grid">
-
 <div class="stat total" id="totalStat">Total</div>
 <div class="stat sav" id="savStat">Savings</div>
 <div class="stat cur" id="curStat">Current</div>
 <div class="stat fix" id="fixStat">Fixed</div>
-
+</div>
 </div>
 
-</div>
-
-
+<!-- Add/Search -->
 <div class="card">
-
-<input id="searchInput" placeholder="Search account or name" onkeyup="handleSearch()">
-
+<input id="searchInput" placeholder="Search account or name">
+<button class="undo" onclick="searchAccount()">Search</button>
 <div id="suggestions"></div>
-
 <br><br>
-
 <input id="accInput" placeholder="Account">
 <input id="nameInput" placeholder="Name">
-
 <select id="catInput">
 <option>Savings</option>
 <option>Current</option>
 <option>Fixed</option>
 </select>
-
 <input id="fileInput" placeholder="File">
 <input id="rowInput" placeholder="Row">
-
 <br><br>
-
 <button class="add" onclick="addMandate()">Add Mandate</button>
 <button class="undo" onclick="undoDelete()">Undo Delete</button>
-
 <input type="file" accept=".csv" onchange="importCSV(event)">
-
 </div>
 
-
+<!-- Table -->
 <div class="card">
-
 <table>
-
 <thead>
-
 <tr>
 <th>Account</th>
 <th>Name</th>
@@ -209,363 +81,192 @@ Mandate Management System
 <th>Row</th>
 <th>Action</th>
 </tr>
-
 </thead>
-
 <tbody id="tableBody"></tbody>
-
 </table>
-
 </div>
 
-
+<!-- File Monitor -->
 <div class="card">
-
 <h3>File Capacity Monitor</h3>
-
 <div id="fileMonitor"></div>
-
 </div>
 
-
+<!-- Activity History -->
 <div class="card">
-
 <h3>Activity Log</h3>
-
 <div id="historyLog" class="history"></div>
-
 </div>
-
-</div>
-
 
 <script>
+// System state
+let mandates = JSON.parse(localStorage.getItem("mandates")) || [];
+let historyLog = JSON.parse(localStorage.getItem("historyLog")) || [];
+let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+let lastDeleted = null;
 
-let mandates = JSON.parse(localStorage.getItem("mandates")) || []
-let historyLog = JSON.parse(localStorage.getItem("historyLog")) || []
-let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || []
-
-let lastDeleted = null
-
-
+// Save state
 function saveSystemState(){
-
-localStorage.setItem("mandates",JSON.stringify(mandates))
-localStorage.setItem("historyLog",JSON.stringify(historyLog))
-localStorage.setItem("recentSearches",JSON.stringify(recentSearches))
-
+localStorage.setItem("mandates",JSON.stringify(mandates));
+localStorage.setItem("historyLog",JSON.stringify(historyLog));
+localStorage.setItem("recentSearches",JSON.stringify(recentSearches));
 }
 
-
+// History log
 function addHistory(action){
-
-let time = new Date().toLocaleString()
-
-historyLog.unshift(time+" : "+action)
-
-if(historyLog.length > 100){
-
-historyLog.pop()
-
+let time = new Date().toLocaleString();
+historyLog.unshift(time+" : "+action);
+if(historyLog.length > 100) historyLog.pop();
+saveSystemState();
+renderHistory();
 }
-
-saveSystemState()
-
-renderHistory()
-
-}
-
 
 function renderHistory(){
-
-let container=document.getElementById("historyLog")
-
-container.innerHTML=historyLog.map(x=>"<div>"+x+"</div>").join("")
-
+document.getElementById("historyLog").innerHTML = historyLog.map(x=>"<div>"+x+"</div>").join("");
 }
 
-
+// Table rendering
 function renderTable(){
-
-let body=document.getElementById("tableBody")
-
-body.innerHTML=""
-
+let body=document.getElementById("tableBody");
+body.innerHTML="";
 mandates.forEach((m,index)=>{
-
 body.innerHTML+=`
-
 <tr>
-
 <td>${m.account}</td>
 <td>${m.name}</td>
 <td>${m.category}</td>
 <td>${m.file}</td>
 <td>${m.row}</td>
-
-<td>
-
-<button class="delete" onclick="deleteMandate(${index})">
-Delete
-</button>
-
-</td>
-
+<td><button class="delete" onclick="deleteMandate(${index})">Delete</button></td>
 </tr>
-
-`
-
-})
-
-updateStats()
-updateFileMonitor()
-
+`;
+});
+updateStats();
+updateFileMonitor();
 }
 
-
+// Stats
 function updateStats(){
-
-document.getElementById("totalStat").innerText="Total "+mandates.length
-
-document.getElementById("savStat").innerText="Savings "+mandates.filter(m=>m.category==="Savings").length
-
-document.getElementById("curStat").innerText="Current "+mandates.filter(m=>m.category==="Current").length
-
-document.getElementById("fixStat").innerText="Fixed "+mandates.filter(m=>m.category==="Fixed").length
-
+document.getElementById("totalStat").innerText="Total "+mandates.length;
+document.getElementById("savStat").innerText="Savings "+mandates.filter(m=>m.category==="Savings").length;
+document.getElementById("curStat").innerText="Current "+mandates.filter(m=>m.category==="Current").length;
+document.getElementById("fixStat").innerText="Fixed "+mandates.filter(m=>m.category==="Fixed").length;
 }
 
-
+// File capacity monitor
 function updateFileMonitor(){
-
-let files={}
-
-mandates.forEach(m=>{
-
-files[m.file]=(files[m.file]||0)+1
-
-})
-
-let html=""
-
+let files={};
+mandates.forEach(m=>{files[m.file]=(files[m.file]||0)+1;});
+let html="";
 for(let file in files){
-
-let count=files[file]
-
-let percent=(count/50)*100
-
-html+=`
-
-<div class="fileBar">
-
-File ${file} : ${count}/50
-
-<div class="progress">
-
-<div class="progressFill" style="width:${percent}%"></div>
-
-</div>
-
-</div>
-
-`
-
+let count=files[file];
+let percent=(count/50)*100;
+html+=`<div class="fileBar">File ${file} : ${count}/50<div class="progress"><div class="progressFill" style="width:${percent}%"></div></div></div>`;
+}
+document.getElementById("fileMonitor").innerHTML=html;
 }
 
-document.getElementById("fileMonitor").innerHTML=html
-
-}
-
-
+// Add mandate
 function addMandate(){
-
-let acc=document.getElementById("accInput").value.trim()
-let name=document.getElementById("nameInput").value.trim()
-let category=document.getElementById("catInput").value
-let file=document.getElementById("fileInput").value
-let row=document.getElementById("rowInput").value
-
-
-if(!acc || !name){
-
-alert("Account and Name required")
-
-return
-
+let acc=document.getElementById("accInput").value.trim();
+let name=document.getElementById("nameInput").value.trim();
+let category=document.getElementById("catInput").value;
+let file=document.getElementById("fileInput").value;
+let row=document.getElementById("rowInput").value;
+if(!acc || !name){alert("Account and Name required");return;}
+if(mandates.some(m=>m.account===acc)){alert("Duplicate account not allowed");return;}
+mandates.push({account:acc,name,category:category,file:file,row:row});
+addHistory("Added account "+acc);
+saveSystemState();
+renderTable();
 }
 
-
-if(mandates.some(m=>m.account===acc)){
-
-alert("Duplicate account not allowed")
-
-return
-
-}
-
-mandates.push({
-
-account:acc,
-name:name,
-category:category,
-file:file,
-row:row
-
-})
-
-addHistory("Added account "+acc)
-
-saveSystemState()
-
-renderTable()
-
-}
-
-
+// Delete & Undo
 function deleteMandate(index){
-
-lastDeleted = mandates[index]
-
-mandates.splice(index,1)
-
-addHistory("Deleted account "+lastDeleted.account)
-
-saveSystemState()
-
-renderTable()
-
+lastDeleted = mandates[index];
+mandates.splice(index,1);
+addHistory("Deleted account "+lastDeleted.account);
+saveSystemState();
+renderTable();
 }
-
 
 function undoDelete(){
-
 if(lastDeleted){
-
-mandates.push(lastDeleted)
-
-addHistory("Undo delete "+lastDeleted.account)
-
-lastDeleted=null
-
-saveSystemState()
-
-renderTable()
-
+mandates.push(lastDeleted);
+addHistory("Undo delete "+lastDeleted.account);
+lastDeleted=null;
+saveSystemState();
+renderTable();
+}
 }
 
-}
-
-
+// Search suggestions
 function handleSearch(){
-
-let input=document.getElementById("searchInput").value.toLowerCase()
-
-let box=document.getElementById("suggestions")
-
-box.innerHTML=""
-
-let results=[]
-
-if(input===""){
-
-results=recentSearches.slice(0,5)
-
-}else{
-
-results=mandates.filter(m=>
-
-m.account.toLowerCase().includes(input) ||
-m.name.toLowerCase().includes(input)
-
-).slice(0,5)
-
+let input=document.getElementById("searchInput").value.toLowerCase();
+let box=document.getElementById("suggestions");
+box.innerHTML="";
+let results=[];
+if(input===""){results=recentSearches.slice(0,5);}
+else{results=mandates.filter(m=>m.account.toLowerCase().includes(input)||m.name.toLowerCase().includes(input)).slice(0,5);}
+results.forEach(m=>{box.innerHTML+=`<div class="suggestion" onclick="selectSearch('${m.account}')">${m.account} - ${m.name}</div>`;});
 }
 
+// Search button functionality
+function searchAccount(){
+let val=document.getElementById("searchInput").value.trim().toLowerCase();
+if(!val){alert("Enter account number or name"); return;}
+let results=mandates.filter(m=>m.account.toLowerCase().includes(val)||m.name.toLowerCase().includes(val));
+if(results.length===0){alert("No account found!"); return;}
+let body=document.getElementById("tableBody");
+body.innerHTML="";
 results.forEach(m=>{
-
-box.innerHTML+=`
-
-<div class="suggestion" onclick="selectSearch('${m.account}')">
-
-${m.account} - ${m.name}
-
-</div>
-
-`
-
-})
-
+body.innerHTML+=`<tr>
+<td>${m.account}</td>
+<td>${m.name}</td>
+<td>${m.category}</td>
+<td>${m.file}</td>
+<td>${m.row}</td>
+<td><button class="delete" onclick="deleteMandate(${mandates.indexOf(m)})">Delete</button></td>
+</tr>`;
+});
+// Add first match to recent
+recentSearches=recentSearches.filter(r=>r.account!==results[0].account);
+recentSearches.unshift(results[0]);
+if(recentSearches.length>5) recentSearches.pop();
+addHistory("Searched for: "+val);
+saveSystemState();
 }
 
-
+// Suggestion click
 function selectSearch(acc){
-
-let item=mandates.find(m=>m.account===acc)
-
-recentSearches=recentSearches.filter(r=>r.account!==acc)
-
-recentSearches.unshift(item)
-
-if(recentSearches.length>5){
-
-recentSearches.pop()
-
+let item=mandates.find(m=>m.account===acc);
+recentSearches=recentSearches.filter(r=>r.account!==acc);
+recentSearches.unshift(item);
+if(recentSearches.length>5) recentSearches.pop();
+document.getElementById("searchInput").value=acc;
+saveSystemState();
 }
 
-document.getElementById("searchInput").value=acc
-
-saveSystemState()
-
-}
-
-
+// CSV import
 function importCSV(event){
-
-let file=event.target.files[0]
-
-let reader=new FileReader()
-
+let file=event.target.files[0];
+let reader=new FileReader();
 reader.onload=function(e){
-
-let rows=e.target.result.split("\n")
-
+let rows=e.target.result.split("\n");
 rows.slice(1).forEach(r=>{
-
-let cols=r.split(",")
-
-if(cols.length>=5){
-
-mandates.push({
-
-account:cols[0],
-name:cols[1],
-category:cols[2],
-file:cols[3],
-row:cols[4]
-
-})
-
+let cols=r.split(",");
+if(cols.length>=5){mandates.push({account:cols[0],name:cols[1],category:cols[2],file:cols[3],row:cols[4]});}
+});
+addHistory("CSV imported");
+saveSystemState();
+renderTable();
+};
+reader.readAsText(file);
 }
 
-})
-
-addHistory("CSV imported")
-
-saveSystemState()
-
-renderTable()
-
-}
-
-reader.readAsText(file)
-
-}
-
-
-renderTable()
-renderHistory()
-
+// Initial render
+renderTable();
+renderHistory();
 </script>
-
 </body>
 </html>
