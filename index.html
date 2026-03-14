@@ -1,234 +1,459 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Mandate Manager - Pro Design</title>
+<title>Mandate Manager Pro</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-body { background:#f4f6f9; font-family:Arial, sans-serif; }
-.card { box-shadow:0 4px 12px rgba(0,0,0,0.1); border-radius:10px; padding:20px; margin-bottom:40px; }
-#suggestions { border:1px solid #ccc; background:white; position:absolute; z-index:10; max-height:150px; overflow:auto; border-radius:5px; }
-.suggest-item { padding:6px; cursor:pointer; }
-.suggest-item:hover { background:#e9ecef; }
-.table-hover tbody tr:hover { background:#f1f1f1; transition:0.2s; }
-.badge-category { font-size:0.9rem; }
+
+body{
+background:#f4f6f9;
+padding:40px;
+font-family:Arial;
+}
+
+.card{
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+#suggestions{
+position:absolute;
+background:white;
+border:1px solid #ccc;
+width:100%;
+max-height:150px;
+overflow:auto;
+z-index:10;
+}
+
+.suggest-item{
+padding:6px;
+cursor:pointer;
+}
+
+.suggest-item:hover{
+background:#eee;
+}
+
+.history-box{
+height:200px;
+overflow:auto;
+background:white;
+border:1px solid #ddd;
+padding:10px;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-  <div class="card">
-    <h2 class="mb-4 text-primary"><i class="bi bi-folder2-open"></i> Mandate Manager</h2>
+<div class="card">
 
-    <!-- Account Counts -->
-    <div class="mb-3">
-      <span class="badge bg-primary me-1" id="totalCount">Total: 0</span>
-      <span class="badge bg-success me-1" id="savingsCount">Savings: 0</span>
-      <span class="badge bg-warning text-dark me-1" id="currentCount">Current: 0</span>
-      <span class="badge bg-info text-dark me-1" id="fixedCount">Fixed: 0</span>
-    </div>
+<h3>Mandate Manager</h3>
 
-    <!-- Search -->
-    <div class="mb-3 position-relative">
-      <input id="searchBox" class="form-control" placeholder="Search Account Number" onkeyup="suggest()">
-      <div id="suggestions"></div>
-    </div>
+<div class="mb-3">
 
-    <!-- Filter + Add -->
-    <div class="mb-3 d-flex align-items-center">
-      <select id="categoryFilter" class="form-select w-auto me-2" onchange="filterCategory()">
-        <option value="">All Categories</option>
-        <option value="Savings">Savings</option>
-        <option value="Current">Current</option>
-        <option value="Fixed">Fixed</option>
-      </select>
-      <button class="btn btn-success ms-2" onclick="showAddForm()"><i class="bi bi-plus-circle"></i> Add Mandate</button>
-    </div>
-
-    <!-- Table -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover" id="resultTable">
-        <thead class="table-dark">
-          <tr>
-            <th>Account</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>File</th>
-            <th>Row</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+<span class="badge bg-primary" id="totalCount">Total:0</span>
+<span class="badge bg-success" id="savingsCount">Savings:0</span>
+<span class="badge bg-warning text-dark" id="currentCount">Current:0</span>
+<span class="badge bg-info text-dark" id="fixedCount">Fixed:0</span>
 
 </div>
 
-<!-- Add Mandate Modal -->
-<div class="modal fade" id="addModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add Mandate</h5>
-        <button type="button" class="btn-close" onclick="closeAddForm()"></button>
-      </div>
-      <div class="modal-body">
-        <input id="newAccount" class="form-control mb-2" placeholder="Account Number">
-        <input id="newName" class="form-control mb-2" placeholder="Name">
-        <select id="newCategory" class="form-select mb-2">
-          <option value="Savings">Savings</option>
-          <option value="Current">Current</option>
-          <option value="Fixed">Fixed</option>
-        </select>
-        <input id="newFile" class="form-control mb-2" placeholder="File No">
-        <input id="newRow" class="form-control mb-2" placeholder="Row No">
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="addMandate()"><i class="bi bi-check-circle"></i> Add</button>
-        <button class="btn btn-secondary" onclick="closeAddForm()">Cancel</button>
-      </div>
-    </div>
-  </div>
+
+<input id="searchBox" class="form-control" placeholder="Search Account" onkeyup="suggest()">
+
+<div id="suggestions"></div>
+
+<br>
+
+<select id="categoryFilter" class="form-select w-25" onchange="renderTable()">
+
+<option value="">All</option>
+<option>Savings</option>
+<option>Current</option>
+<option>Fixed</option>
+
+</select>
+
+<br>
+
+<button class="btn btn-success" onclick="showAdd()">Add Mandate</button>
+
+<button class="btn btn-secondary" onclick="undoDelete()">Undo Delete</button>
+
+
+<hr>
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+<th>Account</th>
+<th>Name</th>
+<th>Category</th>
+<th>File</th>
+<th>Row</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<br>
+
+<div class="card">
+
+<h5>File Capacity (50 per file)</h5>
+
+<div id="fileStatus"></div>
+
+</div>
+
+<br>
+
+<div class="card">
+
+<h5>Activity History</h5>
+
+<div id="historyBox" class="history-box"></div>
+
+</div>
+
+</div>
+
+
+<!-- ADD MODAL -->
+
+<div class="modal" id="addModal">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5>Add Mandate</h5>
+
+<button class="btn-close" onclick="closeAdd()"></button>
+
+</div>
+
+<div class="modal-body">
+
+<input id="newAccount" class="form-control mb-2" placeholder="Account">
+
+<input id="newName" class="form-control mb-2" placeholder="Name">
+
+<select id="newCategory" class="form-select mb-2">
+
+<option>Savings</option>
+<option>Current</option>
+<option>Fixed</option>
+
+</select>
+
+<input id="newFile" class="form-control mb-2" placeholder="File">
+
+<input id="newRow" class="form-control mb-2" placeholder="Row">
+
+</div>
+
+<div class="modal-footer">
+
+<button class="btn btn-primary" onclick="addMandate()">Add</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
-let mandates = [];
-let addModal = new bootstrap.Modal(document.getElementById('addModal'), {backdrop:'static', keyboard:false});
 
-// Load CSV
+let mandates=[]
+
+let history=[]
+
+let lastDeleted=null
+
+
 fetch("mandates.csv")
+
 .then(res=>res.text())
+
 .then(data=>{
-  let rows = data.split("\n");
-  rows.slice(1).forEach(r=>{
-    let cols = r.split(",");
-    if(cols.length>=5){
-      mandates.push({
-        account: cols[0],
-        name: cols[1],
-        category: cols[2],
-        file: cols[3],
-        row: cols[4]
-      });
-    }
-  });
-  renderTable();
-  updateCounts();
-});
 
-// Render table
-function renderTable(filter=""){
-  let tbody = document.querySelector("#resultTable tbody");
-  tbody.innerHTML = "";
-  mandates.forEach((m, i)=>{
-    if(filter && m.category!==filter) return;
-    let tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${m.account}</td>
-      <td>${m.name}</td>
-      <td><span class="badge bg-${m.category==='Savings'?'success':m.category==='Current'?'warning text-dark':'info text-dark'} badge-category">${m.category}</span></td>
-      <td>${m.file}</td>
-      <td>${m.row}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="deleteMandate(${i})"><i class="bi bi-trash"></i> Delete</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
+let rows=data.split("\n")
+
+rows.slice(1).forEach(r=>{
+
+let c=r.split(",")
+
+if(c.length>=5){
+
+mandates.push({
+
+account:c[0],
+
+name:c[1],
+
+category:c[2],
+
+file:c[3],
+
+row:c[4]
+
+})
+
 }
 
-// Search
-function search(){
-  let acc = document.getElementById("searchBox").value;
-  let tbody = document.querySelector("#resultTable tbody");
-  tbody.innerHTML = "";
-  mandates.forEach((m, i)=>{
-    if(m.account===acc){
-      let tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${m.account}</td>
-        <td>${m.name}</td>
-        <td><span class="badge bg-${m.category==='Savings'?'success':m.category==='Current'?'warning text-dark':'info text-dark'} badge-category">${m.category}</span></td>
-        <td>${m.file}</td>
-        <td>${m.row}</td>
-        <td><button class="btn btn-danger btn-sm" onclick="deleteMandate(${i})"><i class="bi bi-trash"></i> Delete</button></td>
-      `;
-      tbody.appendChild(tr);
-    }
-  });
+})
+
+renderTable()
+
+updateCounts()
+
+updateFiles()
+
+})
+
+
+function renderTable(){
+
+let filter=document.getElementById("categoryFilter").value
+
+let body=document.getElementById("tableBody")
+
+body.innerHTML=""
+
+mandates.forEach((m,i)=>{
+
+if(filter && m.category!=filter)return
+
+body.innerHTML+=`
+
+<tr>
+
+<td>${m.account}</td>
+
+<td>${m.name}</td>
+
+<td>${m.category}</td>
+
+<td>${m.file}</td>
+
+<td>${m.row}</td>
+
+<td><button class="btn btn-danger btn-sm" onclick="deleteMandate(${i})">Delete</button></td>
+
+</tr>
+
+`
+
+})
+
 }
 
-// Auto suggest
-function suggest(){
-  let input = document.getElementById("searchBox").value;
-  let box = document.getElementById("suggestions");
-  box.innerHTML = "";
-  let count=0;
-  mandates.forEach(m=>{
-    if(count>=10) return;
-    if(m.account.startsWith(input) && input!==""){
-      let div = document.createElement("div");
-      div.className="suggest-item";
-      div.innerHTML=`<i class="bi bi-search"></i> ${m.account} - ${m.name}`;
-      div.onclick=function(){
-        document.getElementById("searchBox").value=m.account;
-        box.innerHTML="";
-        search();
-      }
-      box.appendChild(div);
-      count++;
-    }
-  });
-}
 
-// Filter category
-function filterCategory(){
-  let val = document.getElementById("categoryFilter").value;
-  renderTable(val);
-}
-
-// Add Mandate Modal
-function showAddForm(){ addModal.show(); }
-function closeAddForm(){ addModal.hide(); }
-
-// Add Mandate
 function addMandate(){
-  let acc = document.getElementById("newAccount").value;
-  let name = document.getElementById("newName").value;
-  let cat = document.getElementById("newCategory").value;
-  let file = document.getElementById("newFile").value;
-  let row = document.getElementById("newRow").value;
-  if(acc && name && cat && file && row){
-    mandates.push({account:acc,name:name,category:cat,file:file,row:row});
-    closeAddForm();
-    renderTable(document.getElementById("categoryFilter").value);
-    updateCounts();
-  } else alert("Fill all fields!");
+
+let acc=document.getElementById("newAccount").value.trim()
+
+let name=document.getElementById("newName").value
+
+let cat=document.getElementById("newCategory").value
+
+let file=document.getElementById("newFile").value
+
+let row=document.getElementById("newRow").value
+
+
+let exists=mandates.some(m=>m.account===acc)
+
+if(exists){
+
+alert("Account already exists")
+
+return
+
 }
 
-// Delete Mandate
+mandates.push({account:acc,name:name,category:cat,file:file,row:row})
+
+logAction("Added "+acc)
+
+renderTable()
+
+updateCounts()
+
+updateFiles()
+
+closeAdd()
+
+}
+
+
 function deleteMandate(i){
-  if(confirm("Are you sure you want to delete this mandate?")){
-    mandates.splice(i,1);
-    renderTable(document.getElementById("categoryFilter").value);
-    updateCounts();
-  }
+
+lastDeleted=mandates[i]
+
+mandates.splice(i,1)
+
+logAction("Deleted "+lastDeleted.account)
+
+renderTable()
+
+updateCounts()
+
+updateFiles()
+
 }
 
-// Update counts
-function updateCounts(){
-  let total = mandates.length;
-  let savings = mandates.filter(m=>m.category==="Savings").length;
-  let current = mandates.filter(m=>m.category==="Current").length;
-  let fixed = mandates.filter(m=>m.category==="Fixed").length;
-  document.getElementById("totalCount").innerText="Total: "+total;
-  document.getElementById("savingsCount").innerText="Savings: "+savings;
-  document.getElementById("currentCount").innerText="Current: "+current;
-  document.getElementById("fixedCount").innerText="Fixed: "+fixed;
+
+function undoDelete(){
+
+if(lastDeleted){
+
+mandates.push(lastDeleted)
+
+logAction("Undo delete "+lastDeleted.account)
+
+lastDeleted=null
+
+renderTable()
+
+updateCounts()
+
+updateFiles()
+
 }
+
+}
+
+
+function suggest(){
+
+let input=document.getElementById("searchBox").value
+
+let box=document.getElementById("suggestions")
+
+box.innerHTML=""
+
+mandates.forEach(m=>{
+
+if(m.account.startsWith(input) && input!=""){
+
+box.innerHTML+=`<div class="suggest-item" onclick="selectAcc('${m.account}')">${m.account}</div>`
+
+}
+
+})
+
+}
+
+
+function selectAcc(a){
+
+document.getElementById("searchBox").value=a
+
+logAction("Search "+a)
+
+}
+
+
+function logAction(text){
+
+let time=new Date().toLocaleTimeString()
+
+history.unshift(time+" - "+text)
+
+renderHistory()
+
+}
+
+
+function renderHistory(){
+
+let box=document.getElementById("historyBox")
+
+box.innerHTML=history.map(h=>"<div>"+h+"</div>").join("")
+
+}
+
+
+function updateCounts(){
+
+document.getElementById("totalCount").innerText="Total:"+mandates.length
+
+document.getElementById("savingsCount").innerText="Savings:"+mandates.filter(m=>m.category=="Savings").length
+
+document.getElementById("currentCount").innerText="Current:"+mandates.filter(m=>m.category=="Current").length
+
+document.getElementById("fixedCount").innerText="Fixed:"+mandates.filter(m=>m.category=="Fixed").length
+
+}
+
+
+function updateFiles(){
+
+let files={}
+
+mandates.forEach(m=>{
+
+files[m.file]=(files[m.file]||0)+1
+
+})
+
+let html=""
+
+for(let f in files){
+
+let count=files[f]
+
+let color=count>=50?"danger":"success"
+
+html+=`<div class="badge bg-${color} m-1">File ${f} : ${count}/50</div>`
+
+}
+
+document.getElementById("fileStatus").innerHTML=html
+
+}
+
+
+function showAdd(){
+
+document.getElementById("addModal").style.display="block"
+
+}
+
+
+function closeAdd(){
+
+document.getElementById("addModal").style.display="none"
+
+}
+
 </script>
 
 </body>
+
 </html>
