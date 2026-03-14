@@ -1,100 +1,205 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Mandate Manager Pro</title>
+<html lang="en">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mandate Management System</title>
 
 <style>
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
 body{
-background:#f4f6f9;
-padding:40px;
-font-family:Arial;
+background:#0f172a;
+font-family:Segoe UI;
+color:#e2e8f0;
+}
+
+header{
+background:#020617;
+padding:20px;
+font-size:24px;
+font-weight:bold;
+letter-spacing:1px;
+}
+
+.container{
+padding:30px;
+max-width:1300px;
+margin:auto;
 }
 
 .card{
+background:#1e293b;
 padding:20px;
-border-radius:12px;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
+border-radius:10px;
+margin-bottom:25px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+}
+
+.stat{
+padding:15px;
+border-radius:8px;
+text-align:center;
+font-weight:bold;
+}
+
+.total{background:#3b82f6}
+.sav{background:#22c55e}
+.cur{background:#f59e0b}
+.fix{background:#a855f7}
+
+input,select{
+padding:10px;
+border-radius:6px;
+border:none;
+margin:6px;
+width:200px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.add{background:#22c55e;color:white}
+.delete{background:#ef4444;color:white}
+.undo{background:#3b82f6;color:white}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+th{
+background:#020617;
+padding:12px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #334155;
+}
+
+tr:hover{
+background:#334155;
 }
 
 #suggestions{
 position:absolute;
-background:white;
-border:1px solid #ccc;
-width:100%;
-max-height:150px;
-overflow:auto;
-z-index:10;
+background:#020617;
+border:1px solid #334155;
+width:250px;
 }
 
-.suggest-item{
-padding:6px;
+.suggestion{
+padding:8px;
 cursor:pointer;
 }
 
-.suggest-item:hover{
-background:#eee;
+.suggestion:hover{
+background:#334155;
 }
 
-.history-box{
-height:200px;
+.history{
+height:160px;
 overflow:auto;
-background:white;
-border:1px solid #ddd;
-padding:10px;
+font-size:13px;
+}
+
+.fileBar{
+margin:5px 0;
+}
+
+.progress{
+height:8px;
+background:#334155;
+border-radius:6px;
+overflow:hidden;
+}
+
+.progressFill{
+height:8px;
+background:#22c55e;
 }
 
 </style>
+
 </head>
 
+
 <body>
+
+<header>
+Mandate Management System
+</header>
 
 <div class="container">
 
 <div class="card">
 
-<h3>Mandate Manager</h3>
+<div class="grid">
 
-<div class="mb-3">
+<div class="stat total" id="totalStat">Total</div>
+<div class="stat sav" id="savStat">Savings</div>
+<div class="stat cur" id="curStat">Current</div>
+<div class="stat fix" id="fixStat">Fixed</div>
 
-<span class="badge bg-primary" id="totalCount">Total:0</span>
-<span class="badge bg-success" id="savingsCount">Savings:0</span>
-<span class="badge bg-warning text-dark" id="currentCount">Current:0</span>
-<span class="badge bg-info text-dark" id="fixedCount">Fixed:0</span>
+</div>
 
 </div>
 
 
-<input id="searchBox" class="form-control" placeholder="Search Account" onkeyup="suggest()">
+<div class="card">
+
+<input id="searchInput" placeholder="Search account or name" onkeyup="handleSearch()">
 
 <div id="suggestions"></div>
 
-<br>
+<br><br>
 
-<select id="categoryFilter" class="form-select w-25" onchange="renderTable()">
+<input id="accInput" placeholder="Account">
+<input id="nameInput" placeholder="Name">
 
-<option value="">All</option>
+<select id="catInput">
 <option>Savings</option>
 <option>Current</option>
 <option>Fixed</option>
-
 </select>
 
-<br>
+<input id="fileInput" placeholder="File">
+<input id="rowInput" placeholder="Row">
 
-<button class="btn btn-success" onclick="showAdd()">Add Mandate</button>
+<br><br>
 
-<button class="btn btn-secondary" onclick="undoDelete()">Undo Delete</button>
+<button class="add" onclick="addMandate()">Add Mandate</button>
+<button class="undo" onclick="undoDelete()">Undo Delete</button>
+
+<input type="file" accept=".csv" onchange="importCSV(event)">
+
+</div>
 
 
-<hr>
+<div class="card">
 
-<table class="table table-bordered">
+<table>
 
-<thead class="table-dark">
+<thead>
 
 <tr>
 <th>Account</th>
@@ -114,72 +219,20 @@ padding:10px;
 </div>
 
 
-<br>
+<div class="card">
+
+<h3>File Capacity Monitor</h3>
+
+<div id="fileMonitor"></div>
+
+</div>
+
 
 <div class="card">
 
-<h5>File Capacity (50 per file)</h5>
+<h3>Activity Log</h3>
 
-<div id="fileStatus"></div>
-
-</div>
-
-<br>
-
-<div class="card">
-
-<h5>Activity History</h5>
-
-<div id="historyBox" class="history-box"></div>
-
-</div>
-
-</div>
-
-
-<!-- ADD MODAL -->
-
-<div class="modal" id="addModal">
-
-<div class="modal-dialog">
-
-<div class="modal-content">
-
-<div class="modal-header">
-
-<h5>Add Mandate</h5>
-
-<button class="btn-close" onclick="closeAdd()"></button>
-
-</div>
-
-<div class="modal-body">
-
-<input id="newAccount" class="form-control mb-2" placeholder="Account">
-
-<input id="newName" class="form-control mb-2" placeholder="Name">
-
-<select id="newCategory" class="form-select mb-2">
-
-<option>Savings</option>
-<option>Current</option>
-<option>Fixed</option>
-
-</select>
-
-<input id="newFile" class="form-control mb-2" placeholder="File">
-
-<input id="newRow" class="form-control mb-2" placeholder="Row">
-
-</div>
-
-<div class="modal-footer">
-
-<button class="btn btn-primary" onclick="addMandate()">Add</button>
-
-</div>
-
-</div>
+<div id="historyLog" class="history"></div>
 
 </div>
 
@@ -188,202 +241,35 @@ padding:10px;
 
 <script>
 
-let mandates=[]
+let mandates = JSON.parse(localStorage.getItem("mandates")) || []
+let historyLog = JSON.parse(localStorage.getItem("historyLog")) || []
+let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || []
 
-let history=[]
-
-let lastDeleted=null
-
-
-fetch("mandates.csv")
-
-.then(res=>res.text())
-
-.then(data=>{
-
-let rows=data.split("\n")
-
-rows.slice(1).forEach(r=>{
-
-let c=r.split(",")
-
-if(c.length>=5){
-
-mandates.push({
-
-account:c[0],
-
-name:c[1],
-
-category:c[2],
-
-file:c[3],
-
-row:c[4]
-
-})
-
-}
-
-})
-
-renderTable()
-
-updateCounts()
-
-updateFiles()
-
-})
+let lastDeleted = null
 
 
-function renderTable(){
+function saveSystemState(){
 
-let filter=document.getElementById("categoryFilter").value
-
-let body=document.getElementById("tableBody")
-
-body.innerHTML=""
-
-mandates.forEach((m,i)=>{
-
-if(filter && m.category!=filter)return
-
-body.innerHTML+=`
-
-<tr>
-
-<td>${m.account}</td>
-
-<td>${m.name}</td>
-
-<td>${m.category}</td>
-
-<td>${m.file}</td>
-
-<td>${m.row}</td>
-
-<td><button class="btn btn-danger btn-sm" onclick="deleteMandate(${i})">Delete</button></td>
-
-</tr>
-
-`
-
-})
+localStorage.setItem("mandates",JSON.stringify(mandates))
+localStorage.setItem("historyLog",JSON.stringify(historyLog))
+localStorage.setItem("recentSearches",JSON.stringify(recentSearches))
 
 }
 
 
-function addMandate(){
+function addHistory(action){
 
-let acc=document.getElementById("newAccount").value.trim()
+let time = new Date().toLocaleString()
 
-let name=document.getElementById("newName").value
+historyLog.unshift(time+" : "+action)
 
-let cat=document.getElementById("newCategory").value
+if(historyLog.length > 100){
 
-let file=document.getElementById("newFile").value
-
-let row=document.getElementById("newRow").value
-
-
-let exists=mandates.some(m=>m.account===acc)
-
-if(exists){
-
-alert("Account already exists")
-
-return
+historyLog.pop()
 
 }
 
-mandates.push({account:acc,name:name,category:cat,file:file,row:row})
-
-logAction("Added "+acc)
-
-renderTable()
-
-updateCounts()
-
-updateFiles()
-
-closeAdd()
-
-}
-
-
-function deleteMandate(i){
-
-lastDeleted=mandates[i]
-
-mandates.splice(i,1)
-
-logAction("Deleted "+lastDeleted.account)
-
-renderTable()
-
-updateCounts()
-
-updateFiles()
-
-}
-
-
-function undoDelete(){
-
-if(lastDeleted){
-
-mandates.push(lastDeleted)
-
-logAction("Undo delete "+lastDeleted.account)
-
-lastDeleted=null
-
-renderTable()
-
-updateCounts()
-
-updateFiles()
-
-}
-
-}
-
-
-function suggest(){
-
-let input=document.getElementById("searchBox").value
-
-let box=document.getElementById("suggestions")
-
-box.innerHTML=""
-
-mandates.forEach(m=>{
-
-if(m.account.startsWith(input) && input!=""){
-
-box.innerHTML+=`<div class="suggest-item" onclick="selectAcc('${m.account}')">${m.account}</div>`
-
-}
-
-})
-
-}
-
-
-function selectAcc(a){
-
-document.getElementById("searchBox").value=a
-
-logAction("Search "+a)
-
-}
-
-
-function logAction(text){
-
-let time=new Date().toLocaleTimeString()
-
-history.unshift(time+" - "+text)
+saveSystemState()
 
 renderHistory()
 
@@ -392,27 +278,65 @@ renderHistory()
 
 function renderHistory(){
 
-let box=document.getElementById("historyBox")
+let container=document.getElementById("historyLog")
 
-box.innerHTML=history.map(h=>"<div>"+h+"</div>").join("")
-
-}
-
-
-function updateCounts(){
-
-document.getElementById("totalCount").innerText="Total:"+mandates.length
-
-document.getElementById("savingsCount").innerText="Savings:"+mandates.filter(m=>m.category=="Savings").length
-
-document.getElementById("currentCount").innerText="Current:"+mandates.filter(m=>m.category=="Current").length
-
-document.getElementById("fixedCount").innerText="Fixed:"+mandates.filter(m=>m.category=="Fixed").length
+container.innerHTML=historyLog.map(x=>"<div>"+x+"</div>").join("")
 
 }
 
 
-function updateFiles(){
+function renderTable(){
+
+let body=document.getElementById("tableBody")
+
+body.innerHTML=""
+
+mandates.forEach((m,index)=>{
+
+body.innerHTML+=`
+
+<tr>
+
+<td>${m.account}</td>
+<td>${m.name}</td>
+<td>${m.category}</td>
+<td>${m.file}</td>
+<td>${m.row}</td>
+
+<td>
+
+<button class="delete" onclick="deleteMandate(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+updateStats()
+updateFileMonitor()
+
+}
+
+
+function updateStats(){
+
+document.getElementById("totalStat").innerText="Total "+mandates.length
+
+document.getElementById("savStat").innerText="Savings "+mandates.filter(m=>m.category==="Savings").length
+
+document.getElementById("curStat").innerText="Current "+mandates.filter(m=>m.category==="Current").length
+
+document.getElementById("fixStat").innerText="Fixed "+mandates.filter(m=>m.category==="Fixed").length
+
+}
+
+
+function updateFileMonitor(){
 
 let files={}
 
@@ -424,36 +348,224 @@ files[m.file]=(files[m.file]||0)+1
 
 let html=""
 
-for(let f in files){
+for(let file in files){
 
-let count=files[f]
+let count=files[file]
 
-let color=count>=50?"danger":"success"
+let percent=(count/50)*100
 
-html+=`<div class="badge bg-${color} m-1">File ${f} : ${count}/50</div>`
+html+=`
+
+<div class="fileBar">
+
+File ${file} : ${count}/50
+
+<div class="progress">
+
+<div class="progressFill" style="width:${percent}%"></div>
+
+</div>
+
+</div>
+
+`
+
+}
+
+document.getElementById("fileMonitor").innerHTML=html
 
 }
 
-document.getElementById("fileStatus").innerHTML=html
+
+function addMandate(){
+
+let acc=document.getElementById("accInput").value.trim()
+let name=document.getElementById("nameInput").value.trim()
+let category=document.getElementById("catInput").value
+let file=document.getElementById("fileInput").value
+let row=document.getElementById("rowInput").value
+
+
+if(!acc || !name){
+
+alert("Account and Name required")
+
+return
 
 }
 
 
-function showAdd(){
+if(mandates.some(m=>m.account===acc)){
 
-document.getElementById("addModal").style.display="block"
+alert("Duplicate account not allowed")
+
+return
+
+}
+
+mandates.push({
+
+account:acc,
+name:name,
+category:category,
+file:file,
+row:row
+
+})
+
+addHistory("Added account "+acc)
+
+saveSystemState()
+
+renderTable()
 
 }
 
 
-function closeAdd(){
+function deleteMandate(index){
 
-document.getElementById("addModal").style.display="none"
+lastDeleted = mandates[index]
+
+mandates.splice(index,1)
+
+addHistory("Deleted account "+lastDeleted.account)
+
+saveSystemState()
+
+renderTable()
 
 }
+
+
+function undoDelete(){
+
+if(lastDeleted){
+
+mandates.push(lastDeleted)
+
+addHistory("Undo delete "+lastDeleted.account)
+
+lastDeleted=null
+
+saveSystemState()
+
+renderTable()
+
+}
+
+}
+
+
+function handleSearch(){
+
+let input=document.getElementById("searchInput").value.toLowerCase()
+
+let box=document.getElementById("suggestions")
+
+box.innerHTML=""
+
+let results=[]
+
+if(input===""){
+
+results=recentSearches.slice(0,5)
+
+}else{
+
+results=mandates.filter(m=>
+
+m.account.toLowerCase().includes(input) ||
+m.name.toLowerCase().includes(input)
+
+).slice(0,5)
+
+}
+
+results.forEach(m=>{
+
+box.innerHTML+=`
+
+<div class="suggestion" onclick="selectSearch('${m.account}')">
+
+${m.account} - ${m.name}
+
+</div>
+
+`
+
+})
+
+}
+
+
+function selectSearch(acc){
+
+let item=mandates.find(m=>m.account===acc)
+
+recentSearches=recentSearches.filter(r=>r.account!==acc)
+
+recentSearches.unshift(item)
+
+if(recentSearches.length>5){
+
+recentSearches.pop()
+
+}
+
+document.getElementById("searchInput").value=acc
+
+saveSystemState()
+
+}
+
+
+function importCSV(event){
+
+let file=event.target.files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+let rows=e.target.result.split("\n")
+
+rows.slice(1).forEach(r=>{
+
+let cols=r.split(",")
+
+if(cols.length>=5){
+
+mandates.push({
+
+account:cols[0],
+name:cols[1],
+category:cols[2],
+file:cols[3],
+row:cols[4]
+
+})
+
+}
+
+})
+
+addHistory("CSV imported")
+
+saveSystemState()
+
+renderTable()
+
+}
+
+reader.readAsText(file)
+
+}
+
+
+renderTable()
+renderHistory()
 
 </script>
 
 </body>
-
 </html>
