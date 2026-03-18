@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mandate Management System | Secure Access</title>
+<title>Mandate Management System | Secure Professional</title>
 <style>
-    /* --- Base Styles --- */
+    /* --- Base UI Styles --- */
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:#0f172a;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:#e2e8f0;}
-    header{background:#020617;padding:20px;font-size:24px;font-weight:bold;letter-spacing:1px; border-bottom: 2px solid #3b82f6; display: none; justify-content: space-between; align-items: center;}
+    body{background:#0f172a;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:#e2e8f0; line-height: 1.5;}
+    header{background:#020617;padding:18px 30px;font-size:22px;font-weight:bold;letter-spacing:1px; border-bottom: 2px solid #3b82f6; display: none; justify-content: space-between; align-items: center;}
     .container{padding:30px;max-width:1300px;margin:auto; display: none;} 
     
-    /* --- Professional Login Overlay --- */
+    /* --- Login Interface --- */
     #loginOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: radial-gradient(circle, #1e293b 0%, #020617 100%);
@@ -21,273 +21,213 @@
         background: #1e293b; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); text-align: center; border: 1px solid #334155;
     }
-    .login-card h2 { margin-bottom: 10px; color: #3b82f6; }
-    .login-card p { color: #94a3b8; font-size: 14px; margin-bottom: 20px; }
-    
+    .login-card h2 { margin-bottom: 8px; color: #3b82f6; }
+    .login-card p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
     .input-group { position: relative; margin-bottom: 15px; }
-    .login-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; outline: none; transition: border 0.3s; }
-    .login-input:focus { border-color: #3b82f6; }
-    
-    .toggle-pass { position: absolute; right: 10px; top: 12px; cursor: pointer; font-size: 12px; color: #3b82f6; user-select: none; }
-    
-    .login-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; color: white; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
-    .login-btn:hover { background: #2563eb; }
+    .login-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; outline: none; transition: 0.3s; }
+    .login-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+    .toggle-pass { position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 11px; color: #3b82f6; font-weight: bold; }
+    .login-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; color: white; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     #loginError { color: #ef4444; font-size: 13px; margin-top: 15px; display: none; background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 4px; }
 
-    /* --- Dashboard Styles --- */
-    .card{background:#1e293b;padding:20px;border-radius:10px;margin-bottom:25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);}
+    /* --- Dashboard Content --- */
+    .card{background:#1e293b;padding:20px;border-radius:10px;margin-bottom:25px; border: 1px solid #334155;}
     .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
-    .stat{padding:15px;border-radius:8px;text-align:center;font-weight:bold;}
+    .stat{padding:15px;border-radius:8px;text-align:center;font-weight:bold; font-size: 14px;}
     .total{background:#3b82f6} .sav{background:#22c55e} .cur{background:#f59e0b} .fix{background:#a855f7}
     
     .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px; }
-    input, select { background: #0f172a; color: white; padding: 10px; border-radius: 6px; border: 1px solid #334155; }
+    input, select { background: #0f172a; color: white; padding: 10px; border-radius: 6px; border: 1px solid #475569; min-width: 150px; }
     
-    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-    .add { background: #22c55e; color: white }
-    .delete { background: #ef4444; color: white; font-size: 12px; padding: 5px 10px; }
-    .logout { background: #64748b; font-size: 14px; color: white; }
+    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-add { background: #22c55e; color: white }
+    .btn-del { background: #ef4444; color: white; font-size: 11px; padding: 6px 10px; }
+    .btn-action { background: #3b82f6; color: white }
+    .btn-logout { background: #475569; font-size: 13px; color: white; }
 
-    table { width:100%; margin-top:20px; border-collapse:collapse; background: #1e293b; }
-    th { background:#020617; padding:15px; text-align: left; color: #94a3b8; text-transform: uppercase; font-size: 12px; }
-    td { padding:12px 15px; border-bottom:1px solid #334155; }
+    table { width:100%; margin-top:10px; border-collapse:collapse; background: #1e293b; }
+    th { background:#020617; padding:15px; text-align: left; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    td { padding:12px 15px; border-bottom:1px solid #334155; font-size: 14px; }
+    tr:hover { background: #263449; }
     
-    .history { height:150px; overflow:auto; background: #0f172a; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px;}
-    .progress { height:8px; background:#334155; border-radius:6px; overflow:hidden; margin-top: 5px; }
-    .progressFill { height:100%; background:#22c55e; transition: width 0.5s; }
+    .history { height:160px; overflow-y:auto; background: #0f172a; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #334155;}
+    .file-bar { margin: 12px 0; font-size: 13px; }
+    .progress { height:8px; background:#334155; border-radius:10px; overflow:hidden; margin-top: 6px; }
+    .progress-fill { height:100%; background:#22c55e; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-card">
-        <h2>Authorized Personnel</h2>
-        <p>Please enter your credentials to proceed.</p>
-        
+        <h2>System Access</h2>
+        <p>Enter credentials to manage mandates.</p>
         <div class="input-group">
-            <input type="text" id="username" class="login-input" placeholder="User ID">
+            <input type="text" id="username" class="login-input" placeholder="Username">
         </div>
-        
         <div class="input-group">
             <input type="password" id="password" class="login-input" placeholder="Password">
             <span class="toggle-pass" onclick="togglePass()">SHOW</span>
         </div>
-        
-        <button class="login-btn" onclick="checkLogin()">Sign In</button>
-        <p id="loginError">Access Denied: Invalid Credentials</p>
+        <button class="login-btn" onclick="checkLogin()">Login to Dashboard</button>
+        <p id="loginError">Invalid Credentials. Try again.</p>
     </div>
 </div>
 
 <header id="appHeader">
     <span>Mandate Management System</span>
-    <button class="logout" onclick="logout()">Logout</button>
+    <button class="btn-logout" onclick="logout()">Logout</button>
 </header>
 
 <div class="container" id="mainApp">
     <div class="card">
         <div class="grid">
-            <div class="stat total" id="totalStat">Total: 0</div>
-            <div class="stat sav" id="savStat">Savings: 0</div>
-            <div class="stat cur" id="curStat">Current: 0</div>
-            <div class="stat fix" id="fixStat">Fixed: 0</div>
+            <div class="stat total" id="totalStat">Total Records: 0</div>
+            <div class="stat sav" id="savStat">Savings Accounts: 0</div>
+            <div class="stat cur" id="curStat">Current Accounts: 0</div>
+            <div class="stat fix" id="fixStat">Fixed Deposits: 0</div>
         </div>
     </div>
 
     <div class="card">
-        <h3>Operational Controls</h3>
-        <div class="controls-row" style="margin-top: 15px;">
-            <input id="searchInput" placeholder="Search records...">
-            <button class="add" style="background:#3b82f6" onclick="searchAccount()">Search</button>
-            <button class="add" style="background:#64748b" onclick="clearSearch()">Clear Filter</button>
+        <h4 style="margin-bottom: 15px;">Search & Filtering</h4>
+        <div class="controls-row">
+            <input id="searchInput" placeholder="Search by name or account..." style="flex-grow: 1;">
+            <button class="btn-action" onclick="searchAccount()">Execute Search</button>
+            <button class="btn-logout" onclick="clearSearch()">Clear Filter</button>
         </div>
         <hr style="border-color: #334155; margin: 20px 0;">
+        <h4 style="margin-bottom: 15px;">Manual Entry & Import</h4>
         <div class="controls-row">
             <input id="accInput" placeholder="Account No">
             <input id="nameInput" placeholder="Full Name">
             <select id="catInput">
-                <option>Savings</option>
-                <option>Current</option>
-                <option>Fixed</option>
+                <option value="Savings">Savings</option>
+                <option value="Current">Current</option>
+                <option value="Fixed">Fixed</option>
             </select>
-            <input id="fileInput" placeholder="File Ref">
-            <input id="rowInput" placeholder="Row No">
-            <button class="add" onclick="addMandate()">Add Mandate</button>
+            <input id="fileInput" placeholder="File Identifier">
+            <input id="rowInput" placeholder="Row Number">
+            <button class="btn-add" onclick="addMandate()">Add Record</button>
+        </div>
+        <div style="margin-top: 15px; font-size: 13px; color: #94a3b8;">
+            Bulk Data Import: <input type="file" accept=".csv" onchange="importCSV(event)" style="border:none; padding: 0; margin-left: 10px;">
         </div>
     </div>
 
-    <div class="card" style="overflow-x: auto;">
-        <table>
+    <div class="card" style="overflow-x: auto; padding: 0;">
+        <table id="mandateTable">
             <thead>
                 <tr>
-                    <th>Account</th><th>Name</th><th>Category</th><th>File</th><th>Row</th><th>Action</th>
+                    <th>Account Number</th>
+                    <th>Account Holder</th>
+                    <th>Category</th>
+                    <th>File Ref</th>
+                    <th>Row</th>
+                    <th style="text-align: center;">Action</th>
                 </tr>
             </thead>
-            <tbody id="tableBody"></tbody>
+            <tbody id="tableBody">
+                </tbody>
         </table>
     </div>
 
-    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+    <div class="grid" style="grid-template-columns: 1fr 1fr; align-items: start;">
         <div class="card">
-            <h3>File Utilization</h3>
+            <h4 style="margin-bottom: 10px;">File Capacity Utilization (Limit: 50)</h4>
             <div id="fileMonitor"></div>
         </div>
         <div class="card">
-            <h3>Security & Activity Log</h3>
+            <h4 style="margin-bottom: 10px;">System Activity Log</h4>
             <div id="historyLog" class="history"></div>
         </div>
     </div>
 </div>
 
 <script>
-// --- Configuration & Security ---
-const AUTH_USER = "PF240937";
-const AUTH_PASS = "PF240937";
+// --- Configuration ---
+const USER_KEY = "PF240937";
+const PASS_KEY = "PF240937";
 
+// --- Authentication Logic ---
 function togglePass() {
     const p = document.getElementById("password");
     const s = document.querySelector(".toggle-pass");
-    if(p.type === "password") {
-        p.type = "text";
-        s.innerText = "HIDE";
-    } else {
-        p.type = "password";
-        s.innerText = "SHOW";
-    }
+    if(p.type === "password") { p.type = "text"; s.innerText = "HIDE"; }
+    else { p.type = "password"; s.innerText = "SHOW"; }
 }
 
 function checkLogin() {
-    const user = document.getElementById("username").value;
-    const pass = document.getElementById("password").value;
-    const error = document.getElementById("loginError");
-
-    if(user === AUTH_USER && pass === AUTH_PASS) {
-        sessionStorage.setItem("isLoggedIn", "true");
-        initApp();
+    const u = document.getElementById("username").value;
+    const p = document.getElementById("password").value;
+    if(u === USER_KEY && p === PASS_KEY) {
+        sessionStorage.setItem("logged_in", "true");
+        loadDashboard();
     } else {
-        error.style.display = "block";
-        addHistory("Failed Login Attempt: " + user);
-        setTimeout(() => { error.style.display = "none"; }, 3000);
+        document.getElementById("loginError").style.display = "block";
+        setTimeout(() => { document.getElementById("loginError").style.display = "none"; }, 3000);
     }
 }
 
-function initApp() {
+function loadDashboard() {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("mainApp").style.display = "block";
     document.getElementById("appHeader").style.display = "flex";
-    renderTable();
-    renderHistory();
-    addHistory("System Access Granted to " + AUTH_USER);
+    refreshUI();
 }
 
 function logout() {
-    sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.removeItem("logged_in");
     location.reload();
 }
 
-// --- Application Logic ---
-let mandates = JSON.parse(localStorage.getItem("mandates")) || [];
-let historyLog = JSON.parse(localStorage.getItem("historyLog")) || [];
+// --- Data Management ---
+let mandates = JSON.parse(localStorage.getItem("m_data")) || [];
+let history = JSON.parse(localStorage.getItem("m_logs")) || [];
 
-function saveState(){
-    localStorage.setItem("mandates", JSON.stringify(mandates));
-    localStorage.setItem("historyLog", JSON.stringify(historyLog));
+function persist() {
+    localStorage.setItem("m_data", JSON.stringify(mandates));
+    localStorage.setItem("m_logs", JSON.stringify(history));
 }
 
-function addHistory(action){
-    let time = new Date().toLocaleTimeString();
-    historyLog.unshift(`[${time}] ${action}`);
-    if(historyLog.length > 50) historyLog.pop();
-    renderHistory();
-    saveState();
+function logAction(msg) {
+    const time = new Date().toLocaleTimeString();
+    history.unshift(`[${time}] ${msg}`);
+    if(history.length > 50) history.pop();
+    renderLogs();
+    persist();
 }
 
-function renderTable(data = mandates) {
+function refreshUI(viewData = mandates) {
     const body = document.getElementById("tableBody");
-    body.innerHTML = data.map(m => `
+    body.innerHTML = viewData.map(m => `
         <tr>
             <td>${m.account}</td>
             <td>${m.name}</td>
-            <td>${m.category}</td>
+            <td style="color: ${m.category==='Savings'?'#22c55e':m.category==='Current'?'#f59e0b':'#a855f7'}">${m.category}</td>
             <td>${m.file}</td>
             <td>${m.row}</td>
-            <td><button class="delete" onclick="deleteMandate('${m.account}')">Delete</button></td>
+            <td style="text-align:center;"><button class="btn-del" onclick="removeMandate('${m.account}')">Delete</button></td>
         </tr>
     `).join("");
+    
     updateStats();
-    updateFileMonitor();
+    updateFileStatus();
+    renderLogs();
 }
 
-function updateStats(){
-    document.getElementById("totalStat").innerText = "Total: " + mandates.length;
+function updateStats() {
+    document.getElementById("totalStat").innerText = "Total Records: " + mandates.length;
     document.getElementById("savStat").innerText = "Savings: " + mandates.filter(m=>m.category==="Savings").length;
     document.getElementById("curStat").innerText = "Current: " + mandates.filter(m=>m.category==="Current").length;
     document.getElementById("fixStat").innerText = "Fixed: " + mandates.filter(m=>m.category==="Fixed").length;
 }
 
-function updateFileMonitor(){
-    let files={};
-    mandates.forEach(m => { if(m.file) files[m.file] = (files[m.file]||0) + 1; });
+function updateFileStatus() {
+    let usage = {};
+    mandates.forEach(m => { if(m.file) usage[m.file] = (usage[m.file]||0) + 1; });
     let html = "";
-    for(let file in files){
-        let count = files[file];
-        let percent = Math.min((count/50)*100, 100);
-        html += `<div class="fileBar">File ${file}: ${count}/50<div class="progress"><div class="progressFill" style="width:${percent}%"></div></div></div>`;
-    }
-    document.getElementById("fileMonitor").innerHTML = html || "No file data available.";
-}
-
-function addMandate(){
-    const acc = document.getElementById("accInput").value.trim();
-    const name = document.getElementById("nameInput").value.trim();
-    if(!acc || !name) return alert("Account and Name are mandatory.");
-    
-    if(mandates.some(x => x.account === acc)) return alert("Account number already exists.");
-
-    mandates.push({ 
-        account: acc, 
-        name: name, 
-        category: document.getElementById("catInput").value, 
-        file: document.getElementById("fileInput").value, 
-        row: document.getElementById("rowInput").value 
-    });
-    
-    addHistory(`Record Created: ${acc}`);
-    renderTable();
-    saveState();
-    
-    // Clear inputs
-    ["accInput", "nameInput", "fileInput", "rowInput"].forEach(id => document.getElementById(id).value = "");
-}
-
-function deleteMandate(acc) {
-    if(!confirm("Are you sure you want to delete account " + acc + "?")) return;
-    mandates = mandates.filter(m => m.account !== acc);
-    addHistory(`Record Deleted: ${acc}`);
-    renderTable();
-    saveState();
-}
-
-function searchAccount(){
-    const val = document.getElementById("searchInput").value.toLowerCase();
-    const filtered = mandates.filter(m => m.account.toLowerCase().includes(val) || m.name.toLowerCase().includes(val));
-    renderTable(filtered);
-}
-
-function clearSearch(){
-    document.getElementById("searchInput").value = "";
-    renderTable();
-}
-
-function renderHistory(){
-    document.getElementById("historyLog").innerHTML = historyLog.map(x=>`<div>${x}</div>`).join("");
-}
-
-// Initial Session Check
-window.onload = () => {
-    if(sessionStorage.getItem("isLoggedIn") === "true") {
-        initApp();
-    }
-};
-</script>
-</body>
-</html>
+    for(let f in usage) {
+        let pct = Math.min((usage[f]/50)*100, 100);
+        html += `<div class="file-bar">File ${f}: ${usage[f]}/50
