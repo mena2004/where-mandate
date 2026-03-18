@@ -3,156 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mandate Management System | Final Build 2026</title>
+<title>Mandate Management System | Bank of Ceylon</title>
 <style>
-    /* --- Professional Banking UI --- */
+    /* --- THEMED BACKGROUND SYNC --- */
     *{margin:0;padding:0;box-sizing:border-box;}
     
     body {
-        /* APPLYING YOUR UPLOADED IMAGE HERE */
-        background: #020617 url('BACK.jpg') no-repeat center center fixed; 
+        /* Applies image to main dashboard background */
+        background: linear-gradient(rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 0.4)), 
+                    url('BACK.jpg') no-repeat center center fixed; 
         background-size: cover;
         font-family: 'Segoe UI', Tahoma, sans-serif;
         color: #e2e8f0; 
         line-height: 1.5;
     }
 
-    header {
-        background: rgba(2, 6, 23, 0.85); /* Translucent header */
-        backdrop-filter: blur(5px);
-        padding: 15px 30px; 
-        border-bottom: 2px solid #3b82f6; 
-        display: none; 
-        justify-content: space-between; 
-        align-items: center;
-    }
-
-    .container { padding: 25px; max-width: 1400px; margin: auto; display: none; } 
-    
-    /* Login & Action Overlays */
     .overlay { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        /* Match background to login screen */
-        background: #020617 url('image_0.png') no-repeat center center fixed;
+        /* FIXED: Applies image to login screen background */
+        background: url('BACK.jpg') no-repeat center center fixed;
         background-size: cover;
         display: flex; justify-content: center; align-items: center; z-index: 9999; 
     }
 
-    .modal-card { 
-        background: rgba(30, 41, 59, 0.9); /* Slight transparency */
-        backdrop-filter: blur(10px);
-        padding: 35px; border-radius: 12px; width: 100%; max-width: 420px; 
-        border: 1px solid #3b82f6; text-align: center; 
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    /* Glass Effect for Cards */
+    .modal-card, .card { 
+        background: rgba(30, 41, 59, 0.75); 
+        backdrop-filter: blur(12px); 
+        -webkit-backdrop-filter: blur(12px);
+        padding: 35px; border-radius: 16px; width: 100%; max-width: 420px; 
+        border: 1px solid rgba(59, 130, 246, 0.3); text-align: center; 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
-    
-    .std-input { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 15px; outline: none;}
-    .std-input:focus { border-color: #3b82f6; }
+
+    .card { max-width: 100%; text-align: left; padding: 20px; margin-bottom: 20px; }
+
+    /* UI Components */
+    header {
+        background: rgba(2, 6, 23, 0.85);
+        backdrop-filter: blur(10px);
+        padding: 15px 30px; 
+        border-bottom: 2px solid #3b82f6; 
+        display: none; justify-content: space-between; align-items: center;
+    }
+
+    .container { padding: 25px; max-width: 1400px; margin: auto; display: none; } 
+    .std-input { width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 15px; outline: none; transition: 0.3s; }
+    .std-input:focus { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
     
     .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .btn-block { width: 100%; margin-bottom: 10px; }
     .btn-primary { background: #3b82f6; color: white; }
     .btn-danger { background: #ef4444; color: white; }
     .btn-success { background: #22c55e; color: white; }
-    .btn-secondary { background: #475569; color: white; }
     .btn-warn { background: #f59e0b; color: #020617; }
 
-    /* Cards are now semi-transparent so you can see the background image lines */
-    .card {
-        background: rgba(30, 41, 59, 0.7); 
-        backdrop-filter: blur(4px);
-        padding: 20px; border-radius: 10px; margin-bottom: 20px; 
-        border: 1px solid rgba(51, 65, 85, 0.5);
-    }
-
     .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-    .stat { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 14px; }
+    .stat { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 14px; color: white;}
     
-    .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    input, select { background: rgba(15, 23, 42, 0.8); color: white; padding: 10px; border-radius: 6px; border: 1px solid #475569; }
-    
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th { background: rgba(2, 6, 23, 0.8); padding: 15px; text-align: left; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;}
-    td { padding: 12px 15px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; color: white; }
+    th { background: rgba(2, 6, 23, 0.8); padding: 15px; text-align: left; color: #3b82f6; font-size: 11px; text-transform: uppercase; }
+    td { padding: 12px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; }
     tr:hover { background: rgba(59, 130, 246, 0.1); }
     
-    .history-box { height: 180px; overflow-y: auto; background: rgba(2, 6, 23, 0.7); padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #334155;}
+    .history-box { height: 180px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; }
 </style>
 </head>
 <body>
 
 <div id="loginOverlay" class="overlay">
     <div class="modal-card">
-        <h2 style="color:#3b82f6; margin-bottom:10px;">Bank Portal</h2>
-        <p style="margin-bottom:20px; font-size:14px; color:#94a3b8;">Authorized Access: PF240937</p>
-        <input type="text" id="username" class="std-input" placeholder="Username">
-        <input type="password" id="password" class="std-input" placeholder="Password">
-        <button class="btn btn-block btn-primary" onclick="checkLogin()">Sign In</button>
-        <p id="loginErr" style="color:#ef4444; display:none; margin-top:10px; font-size:13px;">Invalid Credentials</p>
-    </div>
-</div>
-
-<div id="actionOverlay" class="overlay" style="display: none; background: rgba(2, 6, 23, 0.9);">
-    <div class="modal-card">
-        <h2 id="modalTitle">Security Verify</h2>
-        <p id="modalMsg" style="margin-bottom:20px; font-size:13px; color:#94a3b8;"></p>
-        <input type="password" id="actionPass" class="std-input" placeholder="Enter Admin Password">
-        <button id="confirmBtn" class="btn btn-block">Confirm</button>
-        <button class="btn btn-block btn-secondary" onclick="closeModal()">Cancel</button>
+        <h2 style="color:#3b82f6; margin-bottom:10px;">Bank of Ceylon</h2>
+        <p style="margin-bottom:20px; font-size:14px; color:#94a3b8;">Mandate Portal | PF240937</p>
+        <input type="text" id="username" class="std-input" placeholder="Admin Username">
+        <input type="password" id="password" class="std-input" placeholder="Admin Password">
+        <button class="btn btn-block btn-primary" onclick="checkLogin()">Sign In to Portal</button>
+        <p id="loginErr" style="color:#ef4444; display:none; margin-top:10px;">Access Denied</p>
     </div>
 </div>
 
 <header id="appHeader">
-    <div style="display:flex; align-items:center; gap:15px;">
-        <span style="font-size:18px;">Mandate Manager</span>
-        <button class="btn btn-warn" style="font-size:11px; padding:4px 10px;" onclick="printSummary()">Print Filing Summary</button>
-    </div>
+    <span style="font-weight:bold; letter-spacing:1px; color:#3b82f6;">MANDATE MANAGER</span>
     <div>
-        <button class="btn btn-secondary" id="vaultToggle" onclick="toggleVault()">View Vault</button>
-        <button class="btn btn-danger" style="font-size:11px;" onclick="logout()">Logout</button>
+        <button class="btn btn-warn" onclick="printSummary()">Print Filing Summary</button>
+        <button class="btn btn-danger" style="margin-left:10px;" onclick="logout()">Logout</button>
     </div>
 </header>
 
 <div class="container" id="mainApp">
     <div class="card grid">
-        <div class="stat" style="background:rgba(59, 130, 246, 0.8)">Total Active: <span id="stat-total">0</span></div>
-        <div class="stat" style="background:rgba(34, 197, 94, 0.8)">Savings: <span id="stat-sav">0</span></div>
-        <div class="stat" style="background:rgba(245, 158, 11, 0.8)">Current: <span id="stat-cur">0</span></div>
-        <div class="stat" style="background:rgba(168, 85, 247, 0.8)">Vault: <span id="stat-vault">0</span></div>
+        <div class="stat" style="background:rgba(59, 130, 246, 0.7)">Total: <span id="stat-total">0</span></div>
+        <div class="stat" style="background:rgba(34, 197, 94, 0.7)">Savings: <span id="stat-sav">0</span></div>
+        <div class="stat" style="background:rgba(245, 158, 11, 0.7)">Current: <span id="stat-cur">0</span></div>
+        <div class="stat" style="background:rgba(168, 85, 247, 0.7)">Vault: <span id="stat-vault">0</span></div>
     </div>
 
-    <div class="card" id="opsCard">
-        <div class="controls-row" style="margin-bottom:20px;">
-            <input id="searchInput" placeholder="Quick search..." style="flex:1">
-            <button class="btn btn-primary" onclick="searchData()">Search</button>
-            <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
-        </div>
-        <div class="controls-row">
-            <input id="accIn" placeholder="Account No">
-            <input id="nameIn" placeholder="Full Name">
-            <select id="catIn">
-                <option>Savings</option><option>Current</option><option>Fixed</option>
-            </select>
-            <input id="fileIn" placeholder="File Ref" style="width:100px;">
-            <input id="rowIn" placeholder="Row No" style="width:80px;">
-            <button class="btn btn-success" onclick="addMandate()">Add Record</button>
-        </div>
-    </div>
-
-    <div class="card" style="padding:0; overflow:hidden;">
-        <div style="padding:15px; background:rgba(2, 6, 23, 0.6); border-bottom:1px solid #334155; display:flex; justify-content:space-between;">
-            <h4 id="viewLabel">ACTIVE MANDATES</h4>
+    <div class="card">
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input id="accIn" class="std-input" style="margin:0" placeholder="Account No">
+            <input id="nameIn" class="std-input" style="margin:0" placeholder="Full Name">
+            <input id="fileIn" class="std-input" style="margin:0; width:120px;" placeholder="File Ref">
+            <button class="btn btn-success" onclick="addMandate()">Add Entry</button>
         </div>
         <table>
             <thead>
-                <tr><th>Account</th><th>Name</th><th>Category</th><th>File</th><th>Row</th><th>Action</th></tr>
+                <tr><th>Account</th><th>Name</th><th>File Ref</th><th>Action</th></tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
 
     <div class="card">
-        <h4 style="margin-bottom:10px; font-size:13px; color:#94a3b8;">System Audit Log</h4>
+        <h4 style="margin-bottom:10px; font-size:13px; color:#3b82f6;">System Audit Log</h4>
         <div id="logBox" class="history-box"></div>
     </div>
 </div>
@@ -160,10 +122,7 @@
 <script>
 const KEY = "PF240937";
 let mandates = JSON.parse(localStorage.getItem("m_active")) || [];
-let vault = JSON.parse(localStorage.getItem("m_vault")) || [];
 let logs = JSON.parse(localStorage.getItem("m_logs")) || [];
-let isVault = false;
-let actionTarget = null;
 
 function checkLogin() {
     if(document.getElementById("username").value === KEY && document.getElementById("password").value === KEY) {
@@ -181,118 +140,45 @@ function start() {
     refresh();
 }
 
-function logout() { sessionStorage.clear(); location.reload(); }
-
-function refresh(data = isVault ? vault : mandates) {
+function refresh() {
     const body = document.getElementById("tableBody");
-    body.innerHTML = data.map(m => `
+    body.innerHTML = mandates.map(m => `
         <tr>
-            <td>${m.account}</td><td>${m.name}</td><td>${m.category}</td><td>${m.file}</td><td>${m.row}</td>
-            <td>
-                <button class="btn ${isVault?'btn-success':'btn-danger'}" 
-                        style="padding:4px 8px; font-size:10px;" 
-                        onclick="confirmAction('${isVault?'restore':'delete'}','${m.account}')">
-                    ${isVault?'RESTORE':'DELETE'}
-                </button>
-            </td>
+            <td>${m.account}</td><td>${m.name}</td><td>${m.file}</td>
+            <td><button class="btn btn-danger" style="padding:4px 8px; font-size:10px;" onclick="del('${m.account}')">DELETE</button></td>
         </tr>
     `).join("");
     
     document.getElementById("stat-total").innerText = mandates.length;
-    document.getElementById("stat-sav").innerText = mandates.filter(x=>x.category==="Savings").length;
-    document.getElementById("stat-cur").innerText = mandates.filter(x=>x.category==="Current").length;
-    document.getElementById("stat-vault").innerText = vault.length;
-    
     document.getElementById("logBox").innerHTML = logs.map(l => `<div>${l}</div>`).join("");
+    
     localStorage.setItem("m_active", JSON.stringify(mandates));
-    localStorage.setItem("m_vault", JSON.stringify(vault));
     localStorage.setItem("m_logs", JSON.stringify(logs));
-}
-
-function addLog(msg) {
-    logs.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
-    if(logs.length > 50) logs.pop();
 }
 
 function addMandate() {
     const acc = document.getElementById("accIn").value.trim();
     const name = document.getElementById("nameIn").value.trim();
-    if(!acc || !name) return alert("Missing fields");
-    if(mandates.some(x=>x.account === acc)) return alert("Account already exists");
-
-    mandates.push({
-        account: acc, name: name,
-        category: document.getElementById("catIn").value,
-        file: document.getElementById("fileIn").value || "N/A",
-        row: document.getElementById("rowIn").value || "-"
-    });
-    addLog("Added record: " + acc);
+    const file = document.getElementById("fileIn").value.trim();
+    if(!acc || !name) return;
+    mandates.push({account:acc, name:name, file:file || "N/A"});
+    logs.unshift(`[${new Date().toLocaleTimeString()}] ADDED: ${acc}`);
     refresh();
-    ["accIn","nameIn","fileIn","rowIn"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("accIn").value = "";
+    document.getElementById("nameIn").value = "";
 }
 
-function confirmAction(type, acc) {
-    actionTarget = { type, acc };
-    document.getElementById("modalTitle").innerText = type==='delete'?'Confirm Deletion':'Confirm Restoration';
-    document.getElementById("modalMsg").innerText = `Target Account: ${acc}`;
-    document.getElementById("confirmBtn").className = `btn btn-block ${type==='delete'?'btn-danger':'btn-success'}`;
-    document.getElementById("actionOverlay").style.display = "flex";
-}
-
-function processAction() {
-    if(document.getElementById("actionPass").value !== KEY) return alert("Incorrect Password");
-    if(actionTarget.type === 'delete') {
-        const item = mandates.find(x => x.account === actionTarget.acc);
-        vault.push(item);
-        mandates = mandates.filter(x => x.account !== actionTarget.acc);
-        addLog("DELETED: " + actionTarget.acc);
-    } else {
-        const item = vault.find(x => x.account === actionTarget.acc);
-        mandates.push(item);
-        vault = vault.filter(x => x.account !== actionTarget.acc);
-        addLog("RESTORED: " + actionTarget.acc);
+function del(acc) {
+    if(prompt("Admin Password:") === KEY) {
+        mandates = mandates.filter(m => m.account !== acc);
+        logs.unshift(`[${new Date().toLocaleTimeString()}] DELETED: ${acc}`);
+        refresh();
     }
-    closeModal();
-    refresh();
 }
 
-function closeModal() {
-    document.getElementById("actionOverlay").style.display = "none";
-    document.getElementById("actionPass").value = "";
-}
+function logout() { sessionStorage.clear(); location.reload(); }
+function printSummary() { window.print(); }
 
-function toggleVault() {
-    isVault = !isVault;
-    document.getElementById("viewLabel").innerText = isVault ? "RECYCLE VAULT (DELETED)" : "ACTIVE MANDATES";
-    document.getElementById("opsCard").style.display = isVault ? "none" : "block";
-    document.getElementById("vaultToggle").innerText = isVault ? "Back to List" : "View Vault";
-    refresh();
-}
-
-function searchData() {
-    const q = document.getElementById("searchInput").value.toLowerCase();
-    const src = isVault ? vault : mandates;
-    refresh(src.filter(x => x.account.toLowerCase().includes(q) || x.name.toLowerCase().includes(q)));
-}
-
-function resetSearch() { document.getElementById("searchInput").value = ""; refresh(); }
-
-function printSummary() {
-    const win = window.open('', '_blank');
-    const grouped = mandates.reduce((a, b) => { (a[b.file] = a[b.file] || []).push(b); return a; }, {});
-    let html = `<html><head><style>body{font-family:sans-serif;padding:30px} table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border:1px solid #999;padding:8px;text-align:left} th{background:#eee}</style></head><body><h1>Bank Filing Summary</h1>`;
-    for(let f in grouped) {
-        html += `<h3>File: ${f}</h3><table><thead><tr><th>Row</th><th>Account</th><th>Name</th></tr></thead><tbody>`;
-        grouped[f].sort((x,y)=>x.row-y.row).forEach(m => {
-            html += `<tr><td>${m.row}</td><td>${m.account}</td><td>${m.name}</td></tr>`;
-        });
-        html += `</tbody></table><br>`;
-    }
-    html += `</body></html>`;
-    win.document.write(html); win.print();
-}
-
-document.getElementById("confirmBtn").onclick = processAction;
 window.onload = () => { if(sessionStorage.getItem("auth")) start(); };
 </script>
 </body>
