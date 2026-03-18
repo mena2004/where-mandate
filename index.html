@@ -230,4 +230,105 @@ function updateFileStatus() {
     let html = "";
     for(let f in usage) {
         let pct = Math.min((usage[f]/50)*100, 100);
-        html += `<div class="file-bar">File ${f}: ${usage[f]}/50
+        html += `<div class="file-bar">File ${f}: ${usage[f]}/50 Records
+                 <div class="progress"><div class="progress-fill" style="width:${pct}%; background:${pct>90?'#ef4444':'#22c55e'}"></div></div></div>`;
+    }
+    document.getElementById("fileMonitor").innerHTML = html || "No file associations found.";
+}
+
+function renderLogs() {
+    document.getElementById("historyLog").innerHTML = history.map(h => `<div>${h}</div>`).join("");
+}
+
+// --- CRUD Actions ---
+function addMandate() {
+    const acc = document.getElementById("accInput").value.trim();
+    const nm = document.getElementById("nameInput").value.trim();
+    if(!acc || !nm) return alert("Account Number and Name are required.");
+    
+    if(mandates.some(m => m.account === acc)) return alert("Error: Account already exists.");
+
+    mandates.push({
+        account: acc, name: nm, 
+        category: document.getElementById("catInput").value,
+        file: document.getElementById("fileInput").value.trim() || "N/A",
+        row: document.getElementById("rowInput").value.trim() || "N/A"
+    });
+
+    logAction(`Record Created: ${acc}`);
+    ["accInput", "nameInput", "fileInput", "rowInput"].forEach(i => document.getElementById(i).value = "");
+    refreshUI();
+}
+
+function removeMandate(acc) {
+    if(!confirm("Proceed with deletion of Account: " + acc + "?")) return;
+    mandates = mandates.filter(m => m.account !== acc);
+    logAction(`Record Removed: ${acc}`);
+    refreshUI();
+}
+
+// --- Robust Search System ---
+function searchAccount() {
+    const query = document.getElementById("searchInput").value.toLowerCase().trim();
+    if(!query) { refreshUI(); return; }
+
+    const matches = mandates.filter(m => 
+        m.account.toLowerCase().includes(query) || 
+        m.name.toLowerCase().includes(query)
+    );
+    
+    logAction(`Search Query: "${query}" - Found ${matches.length} results.`);
+    refreshUI(matches);
+}
+
+function clearSearch() {
+    document.getElementById("searchInput").value = "";
+    refreshUI();
+}
+
+// --- Corrected CSV Import ---
+function importCSV(event) {
+    const file = event.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const rows = e.target.result.split(/\r?\n/).filter(l => l.trim() !== "");
+        let added = 0;
+        let skipped = 0;
+
+        // Skip header row
+        rows.slice(1).forEach(row => {
+            const cols = row.split(",").map(c => c.trim());
+            // Map CSV columns: 0=Acc, 1=Name, 2=Cat, 3=File, 4=Row
+            if(cols.length >= 2 && cols[0] !== "") {
+                if(!mandates.some(m => m.account === cols[0])) {
+                    mandates.push({
+                        account: cols[0],
+                        name: cols[1] || "Unnamed",
+                        category: cols[2] || "Savings",
+                        file: cols[3] || "Imported",
+                        row: cols[4] || "-"
+                    });
+                    added++;
+                } else {
+                    skipped++;
+                }
+            }
+        });
+
+        logAction(`Bulk Import: ${added} added, ${skipped} skipped.`);
+        alert(`Import Complete: ${added} new records processed.`);
+        refreshUI();
+        persist();
+    };
+    reader.readAsText(file);
+}
+
+// Check session status on start
+window.onload = () => {
+    if(sessionStorage.getItem("logged_in") === "true") loadDashboard();
+};
+</script>
+</body>
+</html>
