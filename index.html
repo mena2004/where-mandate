@@ -3,332 +3,283 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mandate Management System | Secure Professional</title>
+<title>Mandate Management System | Final Build 2026</title>
 <style>
-    /* --- Base UI Styles --- */
+    /* --- Professional Banking UI --- */
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:#0f172a;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:#e2e8f0; line-height: 1.5;}
-    header{background:#020617;padding:18px 30px;font-size:22px;font-weight:bold;letter-spacing:1px; border-bottom: 2px solid #3b82f6; display: none; justify-content: space-between; align-items: center;}
-    .container{padding:30px;max-width:1300px;margin:auto; display: none;} 
+    body{background:#0f172a;font-family:'Segoe UI', Tahoma, sans-serif;color:#e2e8f0; line-height: 1.5;}
+    header{background:#020617;padding:15px 30px; border-bottom: 2px solid #3b82f6; display: none; justify-content: space-between; align-items: center;}
+    .container{padding:25px;max-width:1400px;margin:auto; display: none;} 
     
-    /* --- Login Interface --- */
-    #loginOverlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle, #1e293b 0%, #020617 100%);
-        display: flex; justify-content: center; align-items: center; z-index: 9999;
-    }
-    .login-card {
-        background: #1e293b; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); text-align: center; border: 1px solid #334155;
-    }
-    .login-card h2 { margin-bottom: 8px; color: #3b82f6; }
-    .login-card p { color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
-    .input-group { position: relative; margin-bottom: 15px; }
-    .login-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; outline: none; transition: 0.3s; }
-    .login-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
-    .toggle-pass { position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 11px; color: #3b82f6; font-weight: bold; }
-    .login-btn { width: 100%; padding: 12px; background: #3b82f6; border: none; color: white; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-    #loginError { color: #ef4444; font-size: 13px; margin-top: 15px; display: none; background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 4px; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.98); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+    .modal-card { background: #1e293b; padding: 35px; border-radius: 12px; width: 100%; max-width: 420px; border: 1px solid #334155; text-align: center; }
+    
+    .std-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; margin-bottom: 15px; outline: none;}
+    .std-input:focus { border-color: #3b82f6; }
+    
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-block { width: 100%; margin-bottom: 10px; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-success { background: #22c55e; color: white; }
+    .btn-secondary { background: #475569; color: white; }
+    .btn-warn { background: #f59e0b; color: #020617; }
 
-    /* --- Dashboard Content --- */
-    .card{background:#1e293b;padding:20px;border-radius:10px;margin-bottom:25px; border: 1px solid #334155;}
+    .card{background:#1e293b;padding:20px;border-radius:10px;margin-bottom:20px; border: 1px solid #334155;}
     .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
     .stat{padding:15px;border-radius:8px;text-align:center;font-weight:bold; font-size: 14px;}
-    .total{background:#3b82f6} .sav{background:#22c55e} .cur{background:#f59e0b} .fix{background:#a855f7}
     
-    .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 15px; }
-    input, select { background: #0f172a; color: white; padding: 10px; border-radius: 6px; border: 1px solid #475569; min-width: 150px; }
+    .controls-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    input, select { background: #0f172a; color: white; padding: 10px; border-radius: 6px; border: 1px solid #475569; }
     
-    button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-    button:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-add { background: #22c55e; color: white }
-    .btn-del { background: #ef4444; color: white; font-size: 11px; padding: 6px 10px; }
-    .btn-action { background: #3b82f6; color: white }
-    .btn-logout { background: #475569; font-size: 13px; color: white; }
-
-    table { width:100%; margin-top:10px; border-collapse:collapse; background: #1e293b; }
-    th { background:#020617; padding:15px; text-align: left; color: #94a3b8; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    th { background:#020617; padding:15px; text-align: left; color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;}
     td { padding:12px 15px; border-bottom:1px solid #334155; font-size: 14px; }
-    tr:hover { background: #263449; }
+    tr:hover { background: rgba(59, 130, 246, 0.05); }
     
-    .history { height:160px; overflow-y:auto; background: #0f172a; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #334155;}
-    .file-bar { margin: 12px 0; font-size: 13px; }
-    .progress { height:8px; background:#334155; border-radius:10px; overflow:hidden; margin-top: 6px; }
-    .progress-fill { height:100%; background:#22c55e; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .history-box { height:180px; overflow-y:auto; background: #020617; padding: 12px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #334155;}
+    .vault-tag { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;}
 </style>
 </head>
 <body>
 
-<div id="loginOverlay">
-    <div class="login-card">
-        <h2>System Access</h2>
-        <p>Enter credentials to manage mandates.</p>
-        <div class="input-group">
-            <input type="text" id="username" class="login-input" placeholder="Username">
-        </div>
-        <div class="input-group">
-            <input type="password" id="password" class="login-input" placeholder="Password">
-            <span class="toggle-pass" onclick="togglePass()">SHOW</span>
-        </div>
-        <button class="login-btn" onclick="checkLogin()">Login to Dashboard</button>
-        <p id="loginError">Invalid Credentials. Try again.</p>
+<div id="loginOverlay" class="overlay">
+    <div class="modal-card">
+        <h2 style="color:#3b82f6; margin-bottom:10px;">Bank Portal</h2>
+        <p style="margin-bottom:20px; font-size:14px; color:#94a3b8;">Authorized Access: PF240937</p>
+        <input type="text" id="username" class="std-input" placeholder="Username">
+        <input type="password" id="password" class="std-input" placeholder="Password">
+        <button class="btn btn-block btn-primary" onclick="checkLogin()">Sign In</button>
+        <p id="loginErr" style="color:#ef4444; display:none; margin-top:10px; font-size:13px;">Invalid Credentials</p>
+    </div>
+</div>
+
+<div id="actionOverlay" class="overlay" style="display: none;">
+    <div class="modal-card">
+        <h2 id="modalTitle">Security Verify</h2>
+        <p id="modalMsg" style="margin-bottom:20px; font-size:13px; color:#94a3b8;"></p>
+        <input type="password" id="actionPass" class="std-input" placeholder="Enter Admin Password">
+        <button id="confirmBtn" class="btn btn-block">Confirm</button>
+        <button class="btn btn-block btn-secondary" onclick="closeModal()">Cancel</button>
     </div>
 </div>
 
 <header id="appHeader">
-    <span>Mandate Management System</span>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <span style="font-size:18px;">Mandate Manager</span>
+        <button class="btn btn-warn" style="font-size:11px; padding:4px 10px;" onclick="printSummary()">Print Filing Summary</button>
+    </div>
+    <div>
+        <button class="btn btn-secondary" id="vaultToggle" onclick="toggleVault()">View Vault</button>
+        <button class="btn btn-danger" style="font-size:11px;" onclick="logout()">Logout</button>
+    </div>
 </header>
 
 <div class="container" id="mainApp">
-    <div class="card">
-        <div class="grid">
-            <div class="stat total" id="totalStat">Total Records: 0</div>
-            <div class="stat sav" id="savStat">Savings Accounts: 0</div>
-            <div class="stat cur" id="curStat">Current Accounts: 0</div>
-            <div class="stat fix" id="fixStat">Fixed Deposits: 0</div>
-        </div>
+    <div class="card grid">
+        <div class="stat" style="background:#3b82f6">Total Active: <span id="stat-total">0</span></div>
+        <div class="stat" style="background:#22c55e">Savings: <span id="stat-sav">0</span></div>
+        <div class="stat" style="background:#f59e0b">Current: <span id="stat-cur">0</span></div>
+        <div class="stat" style="background:#a855f7">Vault: <span id="stat-vault">0</span></div>
     </div>
 
-    <div class="card">
-        <h4 style="margin-bottom: 15px;">Search & Filtering</h4>
-        <div class="controls-row">
-            <input id="searchInput" placeholder="Search by name or account..." style="flex-grow: 1;">
-            <button class="btn-action" onclick="searchAccount()">Execute Search</button>
-            <button class="btn-logout" onclick="clearSearch()">Clear Filter</button>
+    <div class="card" id="opsCard">
+        <div class="controls-row" style="margin-bottom:20px;">
+            <input id="searchInput" placeholder="Quick search..." style="flex:1">
+            <button class="btn btn-primary" onclick="searchData()">Search</button>
+            <button class="btn btn-secondary" onclick="resetSearch()">Reset</button>
         </div>
-        <hr style="border-color: #334155; margin: 20px 0;">
-        <h4 style="margin-bottom: 15px;">Manual Entry & Import</h4>
         <div class="controls-row">
-            <input id="accInput" placeholder="Account No">
-            <input id="nameInput" placeholder="Full Name">
-            <select id="catInput">
-                <option value="Savings">Savings</option>
-                <option value="Current">Current</option>
-                <option value="Fixed">Fixed</option>
+            <input id="accIn" placeholder="Account No">
+            <input id="nameIn" placeholder="Full Name">
+            <select id="catIn">
+                <option>Savings</option><option>Current</option><option>Fixed</option>
             </select>
-            <input id="fileInput" placeholder="File Identifier">
-            <input id="rowInput" placeholder="Row Number">
-            <button class="btn-add" onclick="addMandate()">Add Record</button>
+            <input id="fileIn" placeholder="File Ref" style="width:100px;">
+            <input id="rowIn" placeholder="Row No" style="width:80px;">
+            <button class="btn btn-success" onclick="addMandate()">Add Record</button>
         </div>
-        <div style="margin-top: 15px; font-size: 13px; color: #94a3b8;">
-            Bulk Data Import: <input type="file" accept=".csv" onchange="importCSV(event)" style="border:none; padding: 0; margin-left: 10px;">
+        <div style="margin-top:15px; font-size:12px; color:#94a3b8;">
+            Bulk Import: <input type="file" accept=".csv" onchange="importCSV(event)">
         </div>
     </div>
 
-    <div class="card" style="overflow-x: auto; padding: 0;">
-        <table id="mandateTable">
+    <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:15px; background:#020617; border-bottom:1px solid #334155; display:flex; justify-content:space-between;">
+            <h4 id="viewLabel">ACTIVE MANDATES</h4>
+        </div>
+        <table>
             <thead>
-                <tr>
-                    <th>Account Number</th>
-                    <th>Account Holder</th>
-                    <th>Category</th>
-                    <th>File Ref</th>
-                    <th>Row</th>
-                    <th style="text-align: center;">Action</th>
-                </tr>
+                <tr><th>Account</th><th>Name</th><th>Category</th><th>File</th><th>Row</th><th>Action</th></tr>
             </thead>
-            <tbody id="tableBody">
-                </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
 
-    <div class="grid" style="grid-template-columns: 1fr 1fr; align-items: start;">
-        <div class="card">
-            <h4 style="margin-bottom: 10px;">File Capacity Utilization (Limit: 50)</h4>
-            <div id="fileMonitor"></div>
-        </div>
-        <div class="card">
-            <h4 style="margin-bottom: 10px;">System Activity Log</h4>
-            <div id="historyLog" class="history"></div>
-        </div>
+    <div class="card">
+        <h4 style="margin-bottom:10px; font-size:13px; color:#94a3b8;">System Audit Log</h4>
+        <div id="logBox" class="history-box"></div>
     </div>
 </div>
 
 <script>
-// --- Configuration ---
-const USER_KEY = "PF240937";
-const PASS_KEY = "PF240937";
+const KEY = "PF240937";
+let mandates = JSON.parse(localStorage.getItem("m_active")) || [];
+let vault = JSON.parse(localStorage.getItem("m_vault")) || [];
+let logs = JSON.parse(localStorage.getItem("m_logs")) || [];
+let isVault = false;
+let actionTarget = null;
 
-// --- Authentication Logic ---
-function togglePass() {
-    const p = document.getElementById("password");
-    const s = document.querySelector(".toggle-pass");
-    if(p.type === "password") { p.type = "text"; s.innerText = "HIDE"; }
-    else { p.type = "password"; s.innerText = "SHOW"; }
-}
-
+// --- Auth ---
 function checkLogin() {
-    const u = document.getElementById("username").value;
-    const p = document.getElementById("password").value;
-    if(u === USER_KEY && p === PASS_KEY) {
-        sessionStorage.setItem("logged_in", "true");
-        loadDashboard();
+    if(document.getElementById("username").value === KEY && document.getElementById("password").value === KEY) {
+        sessionStorage.setItem("auth", "ok");
+        start();
     } else {
-        document.getElementById("loginError").style.display = "block";
-        setTimeout(() => { document.getElementById("loginError").style.display = "none"; }, 3000);
+        document.getElementById("loginErr").style.display = "block";
     }
 }
 
-function loadDashboard() {
+function start() {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("mainApp").style.display = "block";
     document.getElementById("appHeader").style.display = "flex";
-    refreshUI();
+    refresh();
 }
 
-function logout() {
-    sessionStorage.removeItem("logged_in");
-    location.reload();
-}
+function logout() { sessionStorage.clear(); location.reload(); }
 
-// --- Data Management ---
-let mandates = JSON.parse(localStorage.getItem("m_data")) || [];
-let history = JSON.parse(localStorage.getItem("m_logs")) || [];
-
-function persist() {
-    localStorage.setItem("m_data", JSON.stringify(mandates));
-    localStorage.setItem("m_logs", JSON.stringify(history));
-}
-
-function logAction(msg) {
-    const time = new Date().toLocaleTimeString();
-    history.unshift(`[${time}] ${msg}`);
-    if(history.length > 50) history.pop();
-    renderLogs();
-    persist();
-}
-
-function refreshUI(viewData = mandates) {
+// --- Core UI ---
+function refresh(data = isVault ? vault : mandates) {
     const body = document.getElementById("tableBody");
-    body.innerHTML = viewData.map(m => `
+    body.innerHTML = data.map(m => `
         <tr>
-            <td>${m.account}</td>
-            <td>${m.name}</td>
-            <td style="color: ${m.category==='Savings'?'#22c55e':m.category==='Current'?'#f59e0b':'#a855f7'}">${m.category}</td>
-            <td>${m.file}</td>
-            <td>${m.row}</td>
-            <td style="text-align:center;"><button class="btn-del" onclick="removeMandate('${m.account}')">Delete</button></td>
+            <td>${m.account}</td><td>${m.name}</td><td>${m.category}</td><td>${m.file}</td><td>${m.row}</td>
+            <td>
+                <button class="btn ${isVault?'btn-success':'btn-danger'}" 
+                        style="padding:4px 8px; font-size:10px;" 
+                        onclick="confirmAction('${isVault?'restore':'delete'}','${m.account}')">
+                    ${isVault?'RESTORE':'DELETE'}
+                </button>
+            </td>
         </tr>
     `).join("");
     
-    updateStats();
-    updateFileStatus();
-    renderLogs();
-}
-
-function updateStats() {
-    document.getElementById("totalStat").innerText = "Total Records: " + mandates.length;
-    document.getElementById("savStat").innerText = "Savings: " + mandates.filter(m=>m.category==="Savings").length;
-    document.getElementById("curStat").innerText = "Current: " + mandates.filter(m=>m.category==="Current").length;
-    document.getElementById("fixStat").innerText = "Fixed: " + mandates.filter(m=>m.category==="Fixed").length;
-}
-
-function updateFileStatus() {
-    let usage = {};
-    mandates.forEach(m => { if(m.file) usage[m.file] = (usage[m.file]||0) + 1; });
-    let html = "";
-    for(let f in usage) {
-        let pct = Math.min((usage[f]/50)*100, 100);
-        html += `<div class="file-bar">File ${f}: ${usage[f]}/50 Records
-                 <div class="progress"><div class="progress-fill" style="width:${pct}%; background:${pct>90?'#ef4444':'#22c55e'}"></div></div></div>`;
-    }
-    document.getElementById("fileMonitor").innerHTML = html || "No file associations found.";
-}
-
-function renderLogs() {
-    document.getElementById("historyLog").innerHTML = history.map(h => `<div>${h}</div>`).join("");
-}
-
-// --- CRUD Actions ---
-function addMandate() {
-    const acc = document.getElementById("accInput").value.trim();
-    const nm = document.getElementById("nameInput").value.trim();
-    if(!acc || !nm) return alert("Account Number and Name are required.");
+    document.getElementById("stat-total").innerText = mandates.length;
+    document.getElementById("stat-sav").innerText = mandates.filter(x=>x.category==="Savings").length;
+    document.getElementById("stat-cur").innerText = mandates.filter(x=>x.category==="Current").length;
+    document.getElementById("stat-vault").innerText = vault.length;
     
-    if(mandates.some(m => m.account === acc)) return alert("Error: Account already exists.");
+    document.getElementById("logBox").innerHTML = logs.map(l => `<div>${l}</div>`).join("");
+    localStorage.setItem("m_active", JSON.stringify(mandates));
+    localStorage.setItem("m_vault", JSON.stringify(vault));
+    localStorage.setItem("m_logs", JSON.stringify(logs));
+}
+
+function addLog(msg) {
+    logs.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    if(logs.length > 50) logs.pop();
+}
+
+// --- Logic ---
+function addMandate() {
+    const acc = document.getElementById("accIn").value.trim();
+    const name = document.getElementById("nameIn").value.trim();
+    if(!acc || !name) return alert("Missing fields");
+    if(mandates.some(x=>x.account === acc)) return alert("Account already exists");
 
     mandates.push({
-        account: acc, name: nm, 
-        category: document.getElementById("catInput").value,
-        file: document.getElementById("fileInput").value.trim() || "N/A",
-        row: document.getElementById("rowInput").value.trim() || "N/A"
+        account: acc, name: name,
+        category: document.getElementById("catIn").value,
+        file: document.getElementById("fileIn").value || "N/A",
+        row: document.getElementById("rowIn").value || "-"
     });
-
-    logAction(`Record Created: ${acc}`);
-    ["accInput", "nameInput", "fileInput", "rowInput"].forEach(i => document.getElementById(i).value = "");
-    refreshUI();
+    addLog("Added record: " + acc);
+    refresh();
+    ["accIn","nameIn","fileIn","rowIn"].forEach(id => document.getElementById(id).value = "");
 }
 
-function removeMandate(acc) {
-    if(!confirm("Proceed with deletion of Account: " + acc + "?")) return;
-    mandates = mandates.filter(m => m.account !== acc);
-    logAction(`Record Removed: ${acc}`);
-    refreshUI();
+function confirmAction(type, acc) {
+    actionTarget = { type, acc };
+    document.getElementById("modalTitle").innerText = type==='delete'?'Confirm Deletion':'Confirm Restoration';
+    document.getElementById("modalMsg").innerText = `Target Account: ${acc}`;
+    document.getElementById("confirmBtn").className = `btn btn-block ${type==='delete'?'btn-danger':'btn-success'}`;
+    document.getElementById("actionOverlay").style.display = "flex";
 }
 
-// --- Robust Search System ---
-function searchAccount() {
-    const query = document.getElementById("searchInput").value.toLowerCase().trim();
-    if(!query) { refreshUI(); return; }
-
-    const matches = mandates.filter(m => 
-        m.account.toLowerCase().includes(query) || 
-        m.name.toLowerCase().includes(query)
-    );
+function processAction() {
+    if(document.getElementById("actionPass").value !== KEY) return alert("Incorrect Password");
     
-    logAction(`Search Query: "${query}" - Found ${matches.length} results.`);
-    refreshUI(matches);
+    if(actionTarget.type === 'delete') {
+        const item = mandates.find(x => x.account === actionTarget.acc);
+        vault.push(item);
+        mandates = mandates.filter(x => x.account !== actionTarget.acc);
+        addLog("DELETED: " + actionTarget.acc);
+    } else {
+        const item = vault.find(x => x.account === actionTarget.acc);
+        mandates.push(item);
+        vault = vault.filter(x => x.account !== actionTarget.acc);
+        addLog("RESTORED: " + actionTarget.acc);
+    }
+    closeModal();
+    refresh();
 }
 
-function clearSearch() {
-    document.getElementById("searchInput").value = "";
-    refreshUI();
+function closeModal() {
+    document.getElementById("actionOverlay").style.display = "none";
+    document.getElementById("actionPass").value = "";
 }
 
-// --- Corrected CSV Import ---
-function importCSV(event) {
-    const file = event.target.files[0];
-    if(!file) return;
+function toggleVault() {
+    isVault = !isVault;
+    document.getElementById("viewLabel").innerText = isVault ? "RECYCLE VAULT (DELETED)" : "ACTIVE MANDATES";
+    document.getElementById("opsCard").style.display = isVault ? "none" : "block";
+    document.getElementById("vaultToggle").innerText = isVault ? "Back to List" : "View Vault";
+    refresh();
+}
 
+function searchData() {
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const src = isVault ? vault : mandates;
+    refresh(src.filter(x => x.account.toLowerCase().includes(q) || x.name.toLowerCase().includes(q)));
+}
+
+function resetSearch() { document.getElementById("searchInput").value = ""; refresh(); }
+
+function importCSV(e) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-        const rows = e.target.result.split(/\r?\n/).filter(l => l.trim() !== "");
-        let added = 0;
-        let skipped = 0;
-
-        // Skip header row
-        rows.slice(1).forEach(row => {
-            const cols = row.split(",").map(c => c.trim());
-            // Map CSV columns: 0=Acc, 1=Name, 2=Cat, 3=File, 4=Row
-            if(cols.length >= 2 && cols[0] !== "") {
-                if(!mandates.some(m => m.account === cols[0])) {
-                    mandates.push({
-                        account: cols[0],
-                        name: cols[1] || "Unnamed",
-                        category: cols[2] || "Savings",
-                        file: cols[3] || "Imported",
-                        row: cols[4] || "-"
-                    });
-                    added++;
-                } else {
-                    skipped++;
-                }
+    reader.onload = (f) => {
+        const rows = f.target.result.split(/\r?\n/).slice(1);
+        rows.forEach(r => {
+            const c = r.split(",").map(v => v.trim());
+            if(c[0] && !mandates.some(x=>x.account===c[0])) {
+                mandates.push({ account:c[0], name:c[1]||"N/A", category:c[2]||"Savings", file:c[3]||"N/A", row:c[4]||"-" });
             }
         });
-
-        logAction(`Bulk Import: ${added} added, ${skipped} skipped.`);
-        alert(`Import Complete: ${added} new records processed.`);
-        refreshUI();
-        persist();
+        addLog("CSV Import Successful");
+        refresh();
     };
-    reader.readAsText(file);
+    reader.readAsText(e.target.files[0]);
 }
 
-// Check session status on start
-window.onload = () => {
-    if(sessionStorage.getItem("logged_in") === "true") loadDashboard();
-};
+function printSummary() {
+    const win = window.open('', '_blank');
+    const grouped = mandates.reduce((a, b) => { (a[b.file] = a[b.file] || []).push(b); return a; }, {});
+    let html = `<html><head><style>body{font-family:sans-serif;padding:30px} table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border:1px solid #999;padding:8px;text-align:left} th{background:#eee}</style></head><body><h1>Bank Filing Summary</h1>`;
+    
+    for(let f in grouped) {
+        html += `<h3>File: ${f}</h3><table><thead><tr><th>Row</th><th>Account</th><th>Name</th></tr></thead><tbody>`;
+        grouped[f].sort((x,y)=>x.row-y.row).forEach(m => {
+            html += `<tr><td>${m.row}</td><td>${m.account}</td><td>${m.name}</td></tr>`;
+        });
+        html += `</tbody></table><br>`;
+    }
+    html += `</body></html>`;
+    win.document.write(html); win.print();
+}
+
+document.getElementById("confirmBtn").onclick = processAction;
+window.onload = () => { if(sessionStorage.getItem("auth")) start(); };
 </script>
 </body>
 </html>
